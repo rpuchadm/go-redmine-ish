@@ -166,7 +166,13 @@ func UpdateIssueHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, issue)
+		updated, err := models.GetIssueByID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, updated)
 	}
 }
 

@@ -19,8 +19,15 @@ func main() {
 	router.GET("/init", handlers.InitHandler(cfg))
 	router.GET("/projects", handlers.GetProjectsHandler(cfg))
 	router.GET("/users", handlers.GetUsersHandler(cfg))
+
 	router.GET("/roles", handlers.GetRolesHandler(cfg))
+	router.GET("/role/:id", handlers.GetRoleHandler(cfg))
+	router.POST("/role", handlers.CreateRoleHandler(cfg))
+	router.PUT("/role/:id", handlers.UpdateRoleHandler(cfg))
+	router.DELETE("/role/:id", handlers.DeleteRoleHandler(cfg))
+
 	router.GET("/trackers", handlers.GetTrackersHandler(cfg))
+
 	router.GET("/issues", handlers.GetIssuesHandler(cfg))
 	router.GET("/issue/:id", handlers.GetIssueHandler(cfg))
 	router.POST("/issue", handlers.CreateIssueHandler(cfg))
