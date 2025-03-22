@@ -222,8 +222,6 @@ func TestRolesTable(db *sql.DB) error {
 	return nil
 }
 
-/*
-
 // GetRolesByUserID obtiene los roles de un usuario
 func GetRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
 	query := `
@@ -257,6 +255,7 @@ func GetRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
 	return roles, nil
 }
 
+/*
 // AddRoleToUser agrega un rol a un usuario
 func AddRoleToUser(db *sql.DB, userID, roleID int) error {
 	query := `INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)`

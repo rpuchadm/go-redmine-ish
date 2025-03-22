@@ -26,6 +26,11 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		sample := true
 
 		if drop {
+			err = models.DropUsersRolesTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 			err = models.DropIssuesTable(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -131,6 +136,27 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 		if sample {
 			err = models.SampleUsers(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
+		// users_roles
+		err = models.CreateUsersRolesTable(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if test {
+			err = models.TestUsersRolesTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+		if sample {
+			err = models.SampleUsersRoles(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return

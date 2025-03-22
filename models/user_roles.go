@@ -106,3 +106,66 @@ func CountUserRoles(db *sql.DB, userID int) (int, error) {
 
 	return count, nil
 }
+
+// CountRoleUsers cuenta el número de usuarios de un rol
+func CountRoleUsers(db *sql.DB, roleID int) (int, error) {
+	query := `SELECT COUNT(*) FROM user_roles WHERE role_id = $1`
+
+	var count int
+	err := db.QueryRow(query, roleID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func CreateUsersRolesTable(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS user_roles (
+    	user_id INT NOT NULL,               -- ID del usuario
+    	role_id INT NOT NULL,               -- ID del rol
+    	PRIMARY KEY (user_id, role_id),     -- Clave primaria compuesta
+    	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    	FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+	);`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DropUsersRolesTable(db *sql.DB) error {
+	query := `DROP TABLE IF EXISTS user_roles`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func SampleUsersRoles(db *sql.DB) error {
+
+	query := `INSERT INTO user_roles (user_id, role_id) VALUES
+		(2, 2),
+		(2, 3),
+		(3, 2)
+		`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func TestUsersRolesTable(db *sql.DB) error {
+
+	return nil
+}
