@@ -5,22 +5,6 @@ import (
 	"fmt"
 )
 
-/*
-CREATE TABLE IF NOT EXISTS issues (
-    id SERIAL PRIMARY KEY,              -- Identificador único del ticket
-    subject VARCHAR(255) NOT NULL,      -- Asunto del ticket
-    description TEXT,                   -- Descripción detallada del ticket
-    tracker_id INT NOT NULL,            -- Tipo de ticket (relacionado con trackers)
-    project_id INT,                     -- Proyecto al que pertenece el ticket (opcional)
-    assigned_to_id INT,                 -- Usuario asignado al ticket (opcional)
-    status VARCHAR(50) DEFAULT 'Open',  -- Estado del ticket (por ejemplo, "Open", "In Progress", "Closed")
-    created_at TIMESTAMP DEFAULT NOW(), -- Fecha de creación del ticket
-    updated_at TIMESTAMP DEFAULT NOW(), -- Fecha de última actualización del ticket
-    FOREIGN KEY (tracker_id) REFERENCES trackers(id) ON DELETE SET NULL,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL,
-    FOREIGN KEY (assigned_to_id) REFERENCES users(id) ON DELETE SET NULL
-);*/
-
 // Issue representa un ticket o incidencia
 type Issue struct {
 	ID           int    `json:"id"`
@@ -231,7 +215,7 @@ func TestIssuesTable(db *sql.DB) error {
 
 	// comprueba si el ticket se ha creado correctamente
 	if issue1.Subject != issue.Subject || issue1.Description != issue.Description {
-		return fmt.Errorf("Error: el ticket no se ha creado correctamente")
+		return fmt.Errorf("error: el ticket no se ha creado correctamente")
 	}
 
 	// actualiza el ticket de prueba
@@ -249,7 +233,7 @@ func TestIssuesTable(db *sql.DB) error {
 
 	// comprueba si el ticket se ha actualizado correctamente
 	if issue2.Subject != issue1.Subject || issue2.Description != issue1.Description {
-		return fmt.Errorf("Error: el ticket no se ha actualizado correctamente")
+		return fmt.Errorf("error: el ticket no se ha actualizado correctamente")
 	}
 
 	// elimina el ticket de prueba

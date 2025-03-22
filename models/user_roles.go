@@ -2,16 +2,6 @@ package models
 
 import "database/sql"
 
-/*
-CREATE TABLE IF NOT EXISTS user_roles (
-    user_id INT NOT NULL,               -- ID del usuario
-    role_id INT NOT NULL,               -- ID del rol
-    PRIMARY KEY (user_id, role_id),     -- Clave primaria compuesta
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
-);
-*/
-
 // UserRole representa la relación entre un usuario y un rol
 type UserRole struct {
 	UserID int `json:"user_id"`

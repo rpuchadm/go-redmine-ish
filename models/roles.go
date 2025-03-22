@@ -5,15 +5,6 @@ import (
 	"fmt"
 )
 
-/*
-CREATE TABLE IF NOT EXISTS roles (
-    id SERIAL PRIMARY KEY,              -- Identificador único del rol
-    name VARCHAR(255) UNIQUE NOT NULL,  -- Nombre del rol (por ejemplo, "Admin", "Developer")
-    description TEXT                    -- Descripción del rol
-);
-// Define los roles que pueden tener los usuarios en el sistema (por ejemplo, administrador, desarrollador, reportero)
-*/
-
 // Role representa un rol que puede tener un usuario
 type Role struct {
 	ID          int    `json:"id"`
@@ -190,7 +181,7 @@ func TestRolesTable(db *sql.DB) error {
 
 	// comprobar si el rol es correcto
 	if role1.Name != role.Name || role1.Description != role.Description {
-		return fmt.Errorf("Error: los datos del rol de prueba no coinciden %v %v", role1, role)
+		return fmt.Errorf("error: los datos del rol de prueba no coinciden %v %v", role1, role)
 	}
 
 	// actualizar rol
@@ -209,7 +200,7 @@ func TestRolesTable(db *sql.DB) error {
 
 	// comprobar si el rol se ha actualizado correctamente
 	if role2.Name != role1.Name || role2.Description != role1.Description {
-		return fmt.Errorf("Error: los datos del rol de prueba actualizado no coinciden")
+		return fmt.Errorf("error: los datos del rol de prueba actualizado no coinciden")
 	}
 
 	// eliminar rol de prueba
@@ -221,11 +212,11 @@ func TestRolesTable(db *sql.DB) error {
 	// comprobar si el rol ha sido eliminado
 	role3, err := GetRoleByID(db, role_id)
 	if err == nil {
-		return fmt.Errorf("Error: el rol no se ha eliminado")
+		return fmt.Errorf("error: el rol no se ha eliminado")
 	}
 
 	if role3 != nil {
-		return fmt.Errorf("Error: el rol no se ha eliminado")
+		return fmt.Errorf("error: el rol no se ha eliminado")
 	}
 
 	return nil

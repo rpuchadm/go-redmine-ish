@@ -5,17 +5,6 @@ import (
 	"fmt"
 )
 
-/*
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,              -- Identificador único del usuario
-    username VARCHAR(255) UNIQUE NOT NULL, -- Nombre de usuario único
-    email VARCHAR(255) UNIQUE NOT NULL, -- Correo electrónico único
-    password_hash VARCHAR(255) NOT NULL, -- Hash de la contraseña
-    created_at TIMESTAMP DEFAULT NOW(), -- Fecha de creación del usuario
-    updated_at TIMESTAMP DEFAULT NOW()  -- Fecha de última actualización
-);
-*/
-
 // User representa un usuario del sistema
 type User struct {
 	ID           int    `json:"id"`

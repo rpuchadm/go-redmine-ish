@@ -5,15 +5,6 @@ import (
 	"fmt"
 )
 
-/*
-CREATE TABLE IF NOT EXISTS trackers (
-    id SERIAL PRIMARY KEY,              -- Identificador único del tracker
-    name VARCHAR(255) UNIQUE NOT NULL,  -- Nombre del tracker (por ejemplo, "Bug", "Feature")
-    description TEXT                    -- Descripción del tracker
-);
-//Define los tipos de tickets o incidencias (por ejemplo, error, mejora, tarea).
-*/
-
 // Tracker representa un tipo de ticket o incidencia
 type Tracker struct {
 	ID          int    `json:"id"`
@@ -161,6 +152,12 @@ func SeedTrackers(db *sql.DB) error {
 		{Name: "Bug", Description: "Error en el sistema"},
 		{Name: "Feature", Description: "Nueva funcionalidad"},
 		{Name: "Task", Description: "Tarea a realizar"},
+		{Name: "Improvement", Description: "Mejora en el sistema"},
+		{Name: "Support", Description: "Soporte técnico"},
+		{Name: "Maintenance", Description: "Mantenimiento"},
+		{Name: "Change", Description: "Cambio en el sistema"},
+		{Name: "Security", Description: "Seguridad"},
+		{Name: "Performance", Description: "Rendimiento"},
 	}
 
 	for _, tracker := range trackers {
