@@ -146,3 +146,18 @@ func CreateCommentsTable(db *sql.DB) error {
 
 	return nil
 }
+
+func SampleComments(db *sql.DB) error {
+	query := `
+	INSERT INTO comments (issue_id, user_id, content)
+	VALUES
+		(2, 2, 'Este es un comentario de prueba'),
+		(3, 3, 'Este es otro comentario de prueba'),
+		(2, 3, 'Este es un comentario de prueba para otro ticket')`
+	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

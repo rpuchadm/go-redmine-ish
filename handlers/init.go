@@ -195,6 +195,13 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		if sample {
+			err = models.SampleComments(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "Base de datos inicializada correctamente"})
 	}
