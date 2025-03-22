@@ -26,6 +26,11 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		sample := true
 
 		if drop {
+			err = models.DropCommentsTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 			err = models.DropUsersRolesTable(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -182,6 +187,13 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
+		}
+
+		// comments
+		err = models.CreateCommentsTable(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "Base de datos inicializada correctamente"})

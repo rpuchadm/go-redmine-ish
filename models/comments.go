@@ -127,7 +127,7 @@ func DropCommentsTable(db *sql.DB) error {
 	return nil
 }
 
-func CreateCommentTable(db *sql.DB) error {
+func CreateCommentsTable(db *sql.DB) error {
 	query := `
 	CREATE TABLE IF NOT EXISTS comments (
 		id SERIAL PRIMARY KEY,
