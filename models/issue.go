@@ -27,9 +27,6 @@ func CreateIssue(db *sql.DB, issue *Issue) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	if err != nil {
-		return 0, err
-	}
 
 	return id, nil
 }
