@@ -3,6 +3,7 @@ package main
 import (
 	"go-redmine-ish/config"
 	"go-redmine-ish/handlers"
+	"go-redmine-ish/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,33 +17,38 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/healthz", handlers.HealthzHandler)
+
 	router.GET("/init", handlers.InitHandler(cfg))
 
-	router.GET("/projects", handlers.GetProjectsHandler(cfg))
-	router.GET("/project/:id", handlers.GetProjectHandler(cfg))
-	router.POST("/project", handlers.CreateProjectHandler(cfg))
-	router.PUT("/project/:id", handlers.UpdateProjectHandler(cfg))
-	router.DELETE("/project/:id", handlers.DeleteProjectHandler(cfg))
+	// Grupo de rutas con middleware de autenticación
+	authGroup := router.Group("/")
+	authGroup.Use(middleware.AuthMiddleware(cfg))
 
-	router.GET("/users", handlers.GetUsersHandler(cfg))
-	router.GET("/user/:id", handlers.GetUserHandler(cfg))
-	router.POST("/user", handlers.CreateUserHandler(cfg))
-	router.PUT("/user/:id", handlers.UpdateUserHandler(cfg))
-	router.DELETE("/user/:id", handlers.DeleteUserHandler(cfg))
+	authGroup.GET("/projects", handlers.GetProjectsHandler(cfg))
+	authGroup.GET("/project/:id", handlers.GetProjectHandler(cfg))
+	authGroup.POST("/project", handlers.CreateProjectHandler(cfg))
+	authGroup.PUT("/project/:id", handlers.UpdateProjectHandler(cfg))
+	authGroup.DELETE("/project/:id", handlers.DeleteProjectHandler(cfg))
 
-	router.GET("/roles", handlers.GetRolesHandler(cfg))
-	router.GET("/role/:id", handlers.GetRoleHandler(cfg))
-	router.POST("/role", handlers.CreateRoleHandler(cfg))
-	router.PUT("/role/:id", handlers.UpdateRoleHandler(cfg))
-	router.DELETE("/role/:id", handlers.DeleteRoleHandler(cfg))
+	authGroup.GET("/users", handlers.GetUsersHandler(cfg))
+	authGroup.GET("/user/:id", handlers.GetUserHandler(cfg))
+	authGroup.POST("/user", handlers.CreateUserHandler(cfg))
+	authGroup.PUT("/user/:id", handlers.UpdateUserHandler(cfg))
+	authGroup.DELETE("/user/:id", handlers.DeleteUserHandler(cfg))
 
-	router.GET("/trackers", handlers.GetTrackersHandler(cfg))
+	authGroup.GET("/roles", handlers.GetRolesHandler(cfg))
+	authGroup.GET("/role/:id", handlers.GetRoleHandler(cfg))
+	authGroup.POST("/role", handlers.CreateRoleHandler(cfg))
+	authGroup.PUT("/role/:id", handlers.UpdateRoleHandler(cfg))
+	authGroup.DELETE("/role/:id", handlers.DeleteRoleHandler(cfg))
 
-	router.GET("/issues", handlers.GetIssuesHandler(cfg))
-	router.GET("/issue/:id", handlers.GetIssueHandler(cfg))
-	router.POST("/issue", handlers.CreateIssueHandler(cfg))
-	router.PUT("/issue/:id", handlers.UpdateIssueHandler(cfg))
-	router.DELETE("/issue/:id", handlers.DeleteIssueHandler(cfg))
+	authGroup.GET("/trackers", handlers.GetTrackersHandler(cfg))
+
+	authGroup.GET("/issues", handlers.GetIssuesHandler(cfg))
+	authGroup.GET("/issue/:id", handlers.GetIssueHandler(cfg))
+	authGroup.POST("/issue", handlers.CreateIssueHandler(cfg))
+	authGroup.PUT("/issue/:id", handlers.UpdateIssueHandler(cfg))
+	authGroup.DELETE("/issue/:id", handlers.DeleteIssueHandler(cfg))
 
 	// Iniciar el servidor
 	if err := router.Run(":8080"); err != nil {

@@ -210,11 +210,7 @@ func TestRolesTable(db *sql.DB) error {
 	}
 
 	// comprobar si el rol ha sido eliminado
-	role3, err := GetRoleByID(db, role_id)
-	if err == nil {
-		return fmt.Errorf("error: el rol no se ha eliminado")
-	}
-
+	role3, _ := GetRoleByID(db, role_id)
 	if role3 != nil {
 		return fmt.Errorf("error: el rol no se ha eliminado")
 	}

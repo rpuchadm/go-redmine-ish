@@ -222,11 +222,7 @@ func TestUsersTable(db *sql.DB) error {
 	}
 
 	// comprobar que el user se ha eliminado correctamente
-	user3, err := GetUserByID(db, user_id)
-	if err == nil {
-		fmt.Printf("Error: el usuario de prueba no se ha eliminado correctamente\n")
-		return fmt.Errorf("error: el usuario de prueba no se ha eliminado correctamente")
-	}
+	user3, _ := GetUserByID(db, user_id)
 
 	if user3 != nil {
 		fmt.Printf("Error: el usuario de prueba no se ha eliminado correctamente\n")

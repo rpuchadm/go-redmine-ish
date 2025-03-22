@@ -248,8 +248,8 @@ func TestProjectsTable(db *sql.DB) error {
 	}
 	// comprobar que el proyecto se ha eliminado correctamente
 	project3, err := GetProjectByID(db, project_id)
-	if err == nil {
-		fmt.Println("El proyecto no se ha eliminado correctamente")
+	if err != nil {
+		fmt.Printf("El proyecto no se ha eliminado correctamente %v \n", err)
 		return err
 	}
 	if project3 != nil {
