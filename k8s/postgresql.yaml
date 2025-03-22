@@ -21,7 +21,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  volumeName: go-redmine-ish-postgresql-pv  
+  volumeName: go-redmine-ish-postgresql-pv
 ---
 apiVersion: apps/v1
 kind: Deployment
