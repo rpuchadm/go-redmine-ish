@@ -262,7 +262,7 @@ func TestIssuesTable(db *sql.DB) error {
 }
 
 // SeedIssues inserta datos de ejemplo en la tabla de tickets
-func SeedIssues(db *sql.DB) error {
+func SampleIssues(db *sql.DB) error {
 
 	issues := []*Issue{
 		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: 1, AssignedToID: 1, Status: "Open"},
