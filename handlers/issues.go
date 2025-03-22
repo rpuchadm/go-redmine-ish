@@ -72,12 +72,6 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		project, err := models.GetProjectByID(db, issue.ProjectID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
 		tracker, err := models.GetTrackerByID(db, issue.TrackerID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -86,8 +80,16 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 
 		data := gin.H{
 			"issue":   issue,
-			"project": project,
 			"tracker": tracker,
+		}
+
+		if issue.ProjectID != nil {
+			project, err := models.GetProjectByID(db, *issue.ProjectID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			data["project"] = project
 		}
 
 		users, err := models.GetUsersByIssueID(db, id)

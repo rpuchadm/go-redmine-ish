@@ -11,7 +11,7 @@ type Issue struct {
 	Subject      string `json:"subject"`
 	Description  string `json:"description"`
 	TrackerID    int    `json:"tracker_id"`
-	ProjectID    int    `json:"project_id"`
+	ProjectID    *int   `json:"project_id"`
 	AssignedToID *int   `json:"assigned_to_id"`
 	Status       string `json:"status"`
 	CreatedAt    string `json:"created_at"`
@@ -192,12 +192,12 @@ func TestIssuesTable(db *sql.DB) error {
 	// crea un ticket de prueba
 
 	assigned_to_id := 2
-
+	project_id := 2
 	issue := &Issue{
 		Subject:      "Test Issue",
 		Description:  "This is a test issue",
 		TrackerID:    2,
-		ProjectID:    2,
+		ProjectID:    &project_id,
 		AssignedToID: &assigned_to_id,
 		Status:       "Open",
 	}
@@ -249,11 +249,11 @@ func TestIssuesTable(db *sql.DB) error {
 func SampleIssues(db *sql.DB) error {
 
 	assigned_to_id := 2
-
+	project_id := 2
 	issues := []*Issue{
-		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: 2, AssignedToID: &assigned_to_id, Status: "Open"},
-		{Subject: "Issue 2", Description: "This is issue 2", TrackerID: 2, ProjectID: 2, AssignedToID: &assigned_to_id, Status: "Open"},
-		{Subject: "Issue 3", Description: "This is issue 3", TrackerID: 3, ProjectID: 2, AssignedToID: &assigned_to_id, Status: "Open"},
+		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: &project_id, AssignedToID: &assigned_to_id, Status: "Open"},
+		{Subject: "Issue 2", Description: "This is issue 2", TrackerID: 2, ProjectID: &project_id, AssignedToID: &assigned_to_id, Status: "Open"},
+		{Subject: "Issue 3", Description: "This is issue 3", TrackerID: 3, ProjectID: &project_id, AssignedToID: &assigned_to_id, Status: "Open"},
 	}
 
 	for _, issue := range issues {
