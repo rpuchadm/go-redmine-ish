@@ -26,6 +26,21 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		sample := true
 
 		if drop {
+			err = models.DropCategoriesTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			err = models.DropCustomFieldValuesTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			err = models.DropCustomFieldTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 			err = models.DropCommentsTable(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -197,6 +212,34 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 		if sample {
 			err = models.SampleComments(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
+		// custom_fields
+		err = models.CreateCustomFieldTable(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// custom_field_values
+		err = models.CreateCustomFieldValuesTable(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// categories
+		err = models.CreateCategoriesTable(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if sample {
+			err = models.SampleCategories(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
