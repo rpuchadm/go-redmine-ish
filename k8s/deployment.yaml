@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: go-redmine-ish-golang-app
-  namespace: dummy-issue-namespace
+  namespace: go-redmine-ish
 spec:
   replicas: 1
   selector:

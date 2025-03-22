@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -18,7 +19,7 @@ type Project struct {
 }
 
 // CreateProject inserta un nuevo proyecto en la base de datos
-func CreateProject(db *sql.DB, project *Project) error {
+func CreateProject(db *sql.DB, project *Project) (int, error) {
 	query := `
 	INSERT INTO projects (name, identifier, description, parent_id, created_on, updated_on)
 	VALUES ($1, $2, $3, $4, $5, $6)
@@ -36,10 +37,10 @@ func CreateProject(db *sql.DB, project *Project) error {
 
 	if err != nil {
 		log.Printf("Error al crear el proyecto: %v", err)
-		return err
+		return 0, err
 	}
 
-	return nil
+	return project.ID, nil
 }
 
 // GetProjectByID obtiene un proyecto por su ID
@@ -109,5 +110,102 @@ func DeleteProject(db *sql.DB, id int) error {
 		return err
 	}
 
+	return nil
+}
+
+func CreateProjectsTable(db *sql.DB) error {
+	createTableQuery := `
+	CREATE TABLE IF NOT EXISTS projects (
+		id SERIAL PRIMARY KEY,
+		name VARCHAR(255) NOT NULL,
+		identifier VARCHAR(255) UNIQUE NOT NULL,
+		description TEXT,
+		created_on TIMESTAMP DEFAULT NOW(),
+		updated_on TIMESTAMP DEFAULT NOW(),
+		parent_id INT,
+		FOREIGN KEY (parent_id) REFERENCES projects(id) ON DELETE SET NULL
+	);`
+
+	_, err := db.Exec(createTableQuery)
+	if err != nil {
+		log.Printf("Error al crear la tabla projects: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func DropProjectsTable(db *sql.DB) error {
+	dropTableQuery := `DROP TABLE IF EXISTS projects;`
+
+	_, err := db.Exec(dropTableQuery)
+	if err != nil {
+		log.Printf("Error al eliminar la tabla projects: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func TestProjectsTable(db *sql.DB) error {
+	// Crear un proyecto de ejemplo
+	project0 := &Project{
+		Name:        "Proyecto de ejemplo",
+		Identifier:  "ejemplo",
+		Description: "Este es un proyecto de ejemplo",
+	}
+	project_id, err := CreateProject(db, project0)
+	if err != nil {
+		fmt.Printf("Error al crear el proyecto: %v\n", err)
+		return err
+	}
+
+	// cargar el proyecto creado
+	project1, err := GetProjectByID(db, project_id)
+	if err != nil {
+		fmt.Printf("Error al obtener el proyecto: %v\n", err)
+		return err
+	}
+	// comprobar que el proyecto se ha creado correctamente
+	if project1.Name != project0.Name || project1.Identifier != project0.Identifier || project1.Description != project0.Description {
+		fmt.Println("El proyecto no se ha creado correctamente")
+		return err
+	}
+	// actualizar el proyecto creado
+	project1.Name = "Proyecto de ejemplo actualizado"
+	project1.Identifier = "ejemplo-actualizado"
+	project1.Description = "Este es un proyecto de ejemplo actualizado"
+	err = UpdateProject(db, project1)
+	if err != nil {
+		fmt.Printf("Error al actualizar el proyecto: %v\n", err)
+		return err
+	}
+	// cargar el proyecto actualizado
+	project2, err := GetProjectByID(db, project_id)
+	if err != nil {
+		fmt.Printf("Error al obtener el proyecto: %v\n", err)
+		return err
+	}
+	// comprobar que el proyecto se ha actualizado correctamente
+	if project2.Name != project1.Name || project2.Identifier != project1.Identifier || project2.Description != project1.Description {
+		fmt.Println("El proyecto no se ha actualizado correctamente")
+		return err
+	}
+	// eliminar el proyecto creado
+	err = DeleteProject(db, project_id)
+	if err != nil {
+		fmt.Printf("Error al eliminar el proyecto: %v\n", err)
+		return err
+	}
+	// comprobar que el proyecto se ha eliminado correctamente
+	project3, err := GetProjectByID(db, project_id)
+	if err == nil {
+		fmt.Println("El proyecto no se ha eliminado correctamente")
+		return err
+	}
+	if project3 != nil {
+		fmt.Println("El proyecto no se ha eliminado correctamente")
+		return fmt.Errorf("el proyecto no se ha eliminado correctamente")
+	}
 	return nil
 }
