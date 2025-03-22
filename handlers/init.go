@@ -25,14 +25,35 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		test := true
 		sample := true
 
-		// projects
 		if drop {
+			err = models.DropIssuesTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			err = models.DropTrackersTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			err = models.DropRolesTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			err = models.DropUsersTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 			err = models.DropProjectsTable(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
 		}
+
+		// projects
 		err = models.CreateProjectsTable(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -54,13 +75,6 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		// trackers
-		if drop {
-			err = models.DropTrackersTable(db)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		}
 		err = models.CreateTrackersTable(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -82,13 +96,6 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		// roles
-		if drop {
-			err = models.DropRolesTable(db)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		}
 		err = models.CreateRolesTable(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -110,13 +117,6 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		// users
-		if drop {
-			err = models.DropUsersTable(db)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		}
 		err = models.CreateUsersTable(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -138,13 +138,6 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		// issues
-		if drop {
-			err = models.DropIssuesTable(db)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		}
 		err = models.CreateIssuesTable(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

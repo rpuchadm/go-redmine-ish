@@ -212,9 +212,9 @@ func TestIssuesTable(db *sql.DB) error {
 	issue := &Issue{
 		Subject:      "Test Issue",
 		Description:  "This is a test issue",
-		TrackerID:    1,
-		ProjectID:    1,
-		AssignedToID: 1,
+		TrackerID:    2,
+		ProjectID:    2,
+		AssignedToID: 2,
 		Status:       "Open",
 	}
 
@@ -265,9 +265,9 @@ func TestIssuesTable(db *sql.DB) error {
 func SampleIssues(db *sql.DB) error {
 
 	issues := []*Issue{
-		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: 1, AssignedToID: 1, Status: "Open"},
-		{Subject: "Issue 2", Description: "This is issue 2", TrackerID: 2, ProjectID: 1, AssignedToID: 1, Status: "Open"},
-		{Subject: "Issue 3", Description: "This is issue 3", TrackerID: 3, ProjectID: 1, AssignedToID: 1, Status: "Open"},
+		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: 2, AssignedToID: 2, Status: "Open"},
+		{Subject: "Issue 2", Description: "This is issue 2", TrackerID: 2, ProjectID: 2, AssignedToID: 2, Status: "Open"},
+		{Subject: "Issue 3", Description: "This is issue 3", TrackerID: 3, ProjectID: 2, AssignedToID: 2, Status: "Open"},
 	}
 
 	for _, issue := range issues {
