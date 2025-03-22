@@ -1,16 +1,15 @@
 package handlers
 
 import (
-	"net/http"
-
 	"go-redmine-ish/config"
 	"go-redmine-ish/database"
 	"go-redmine-ish/models"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func InitHandler(cfg *config.Config) gin.HandlerFunc {
+func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// Inicializar la base de datos
@@ -21,29 +20,23 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 		defer db.Close()
 
-		err = models.DropProjectsTable(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		err = models.CreateProjectsTable(db)
+		projects, err := models.GetProjects(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		err = models.TestProjectsTable(db)
+		count, err := models.CountProjects(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		err = models.SampleProjects(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+		data := gin.H{
+			"projects": projects,
+			"count":    count,
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Base de datos inicializada correctamente"})
+		c.JSON(http.StatusOK, data)
 	}
 }

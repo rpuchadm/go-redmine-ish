@@ -9,13 +9,13 @@ import (
 
 // Project representa la estructura de un proyecto en la base de datos
 type Project struct {
-	ID          int           `json:"id"`
-	ParentID    sql.NullInt64 `json:"parent_id"` // Usamos sql.NullInt64 para manejar valores NULL
-	Name        string        `json:"name"`
-	Identifier  string        `json:"identifier"`
-	Description string        `json:"description"`
-	CreatedOn   time.Time     `json:"created_on"`
-	UpdatedOn   time.Time     `json:"updated_on"`
+	ID          int       `json:"id"`
+	ParentID    *int      `json:"parent_id"` // Usamos *int para manejar valores NULL
+	Name        string    `json:"name"`
+	Identifier  string    `json:"identifier"`
+	Description string    `json:"description"`
+	CreatedOn   time.Time `json:"created_on"`
+	UpdatedOn   time.Time `json:"updated_on"`
 }
 
 // CreateProject inserta un nuevo proyecto en la base de datos
@@ -51,14 +51,13 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 	WHERE id = $1`
 
 	project := &Project{}
-	var parentID sql.NullInt64
 
 	err := db.QueryRow(query, id).Scan(
 		&project.ID,
 		&project.Name,
 		&project.Identifier,
 		&project.Description,
-		&parentID,
+		&project.ParentID,
 		&project.CreatedOn,
 		&project.UpdatedOn,
 	)
@@ -71,7 +70,6 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 		return nil, err
 	}
 
-	project.ParentID = parentID
 	return project, nil
 }
 
@@ -98,6 +96,57 @@ func UpdateProject(db *sql.DB, project *Project) error {
 	}
 
 	return nil
+}
+
+// GetProjects obtiene todos los proyectos de la base de datos
+func GetProjects(db *sql.DB) ([]*Project, error) {
+	query := `
+	SELECT id, name, identifier, description, parent_id, created_on, updated_on
+	FROM projects
+	ORDER BY id`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Printf("Error al obtener los proyectos: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	projects := []*Project{}
+	for rows.Next() {
+		project := &Project{}
+
+		err := rows.Scan(
+			&project.ID,
+			&project.Name,
+			&project.Identifier,
+			&project.Description,
+			&project.ParentID,
+			&project.CreatedOn,
+			&project.UpdatedOn,
+		)
+		if err != nil {
+			log.Printf("Error al escanear el proyecto: %v", err)
+			return nil, err
+		}
+
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
+func CountProjects(db *sql.DB) (int, error) {
+	query := `SELECT COUNT(*) FROM projects`
+
+	var count int
+	err := db.QueryRow(query).Scan(&count)
+	if err != nil {
+		log.Printf("Error al contar los proyectos: %v", err)
+		return 0, err
+	}
+
+	return count, nil
 }
 
 // DeleteProject elimina un proyecto por su ID
@@ -207,5 +256,45 @@ func TestProjectsTable(db *sql.DB) error {
 		fmt.Println("El proyecto no se ha eliminado correctamente")
 		return fmt.Errorf("el proyecto no se ha eliminado correctamente")
 	}
+
+	return nil
+}
+
+func SampleProjects(db *sql.DB) error {
+
+	// insertamos 3 proyectos de ejemplo
+	project4 := &Project{
+		Name:        "Proyecto 1",
+		Identifier:  "proyecto-1",
+		Description: "Este es el proyecto 1",
+	}
+	_, err := CreateProject(db, project4)
+	if err != nil {
+		fmt.Printf("Error al crear el proyecto: %v\n", err)
+		return err
+	}
+
+	project5 := &Project{
+		Name:        "Proyecto 2",
+		Identifier:  "proyecto-2",
+		Description: "Este es el proyecto 2",
+	}
+	_, err = CreateProject(db, project5)
+	if err != nil {
+		fmt.Printf("Error al crear el proyecto: %v\n", err)
+		return err
+	}
+
+	project6 := &Project{
+		Name:        "Proyecto 3",
+		Identifier:  "proyecto-3",
+		Description: "Este es el proyecto 3",
+	}
+	_, err = CreateProject(db, project6)
+	if err != nil {
+		fmt.Printf("Error al crear el proyecto: %v\n", err)
+		return err
+	}
+
 	return nil
 }
