@@ -90,14 +90,24 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 			"tracker": tracker,
 		}
 
-		if issue.AssignedToID != nil {
-			// Get the assigned user
-			user, err := models.GetUserByID(db, *issue.AssignedToID)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-			data["user"] = user
+		users, err := models.GetUsersByIssueID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(users) > 0 {
+			data["users"] = users
+		}
+
+		comments, err := models.GetCommentsByIssueID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(comments) > 0 {
+			data["comments"] = comments
 		}
 
 		c.JSON(http.StatusOK, data)
