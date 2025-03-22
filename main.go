@@ -36,6 +36,8 @@ func main() {
 	authGroup := router.Group("/")
 	authGroup.Use(middleware.AuthMiddleware(cfg))
 
+	authGroup.GET("/auth", handlers.GetAuthHandler(cfg))
+
 	authGroup.GET("/projects", handlers.GetProjectsHandler(cfg))
 	authGroup.GET("/project/:id", handlers.GetProjectHandler(cfg))
 	authGroup.POST("/project", handlers.CreateProjectHandler(cfg))
