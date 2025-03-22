@@ -4,7 +4,9 @@ import (
 	"go-redmine-ish/config"
 	"go-redmine-ish/handlers"
 	"go-redmine-ish/middleware"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +17,16 @@ func main() {
 
 	// Crear un router Gin
 	router := gin.Default()
+
+	// Configurar CORS
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"}, // Origen permitido
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour, // Tiempo de caché para las opciones preflight
+	}))
 
 	router.GET("/healthz", handlers.HealthzHandler)
 
