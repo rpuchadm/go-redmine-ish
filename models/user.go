@@ -301,3 +301,35 @@ func GetUsersByIssueID(db *sql.DB, issue_id int) ([]*User, error) {
 
 	return users, nil
 }
+
+func GetUsersByProjectID(db *sql.DB, project_id int) ([]*User, error) {
+	query := `
+	SELECT id, username, email, password_hash, created_at, updated_at
+	FROM users
+	WHERE id IN (
+		select assigned_to_id
+		from categories
+		where project_id = $1
+	)
+	`
+
+	rows, err := db.Query(query, project_id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []*User{}
+	for rows.Next() {
+		user := &User{}
+
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}

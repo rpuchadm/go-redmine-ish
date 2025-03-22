@@ -120,15 +120,16 @@ func DropCategoriesTable(db *sql.DB) error {
 func SampleCategories(db *sql.DB) error {
 	query := `
 	INSERT INTO categories (project_id, name, assigned_to_id)
-	VALUES (1, 'General', NULL),
-	(4, 'Desarrollo', NULL),
-	(4, 'Diseño', NULL),
+	VALUES
 	(4, 'General', NULL),
-	(2, 'Desarrollo', NULL),
-	(2, 'Diseño', NULL),
+	(4, 'Desarrollo', 3),
+	(4, 'Diseño', 4),
+	(2, 'General', NULL),
+	(2, 'Desarrollo', 3),
+	(2, 'Diseño', 4),
 	(3, 'General', NULL),
-	(3, 'Desarrollo', NULL),
-	(3, 'Diseño', NULL)`
+	(3, 'Desarrollo', 3),
+	(3, 'Diseño', 4)`
 	_, err := db.Exec(query)
 	return err
 }

@@ -17,7 +17,12 @@ func main() {
 
 	router.GET("/healthz", handlers.HealthzHandler)
 	router.GET("/init", handlers.InitHandler(cfg))
+
 	router.GET("/projects", handlers.GetProjectsHandler(cfg))
+	router.GET("/project/:id", handlers.GetProjectHandler(cfg))
+	router.POST("/project", handlers.CreateProjectHandler(cfg))
+	router.PUT("/project/:id", handlers.UpdateProjectHandler(cfg))
+	router.DELETE("/project/:id", handlers.DeleteProjectHandler(cfg))
 
 	router.GET("/users", handlers.GetUsersHandler(cfg))
 	router.GET("/user/:id", handlers.GetUserHandler(cfg))
