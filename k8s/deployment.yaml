@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-redmine-ish-golang-app
+  namespace: dummy-issue-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-redmine-ish-golang-app
+  template:
+    metadata:
+      labels:
+        app: go-redmine-ish-golang-app
+    spec:
+      containers:
+      - name: go-redmine-ish-golang-app
+        image: localhost:32000/go-redmine-ish-golang-app:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: postgres-config
+        - configMapRef:
+            name: redis-config  # Referencia al ConfigMap  
+        env:
+        - name: AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: auth-secret  # Nombre del secret
+              key: AUTH_TOKEN    # Clave del secret
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret  # Nombre del secret
+              key: REDIS_PASSWORD  # Clave del secret
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 32Mi
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080                                  
