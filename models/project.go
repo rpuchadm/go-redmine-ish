@@ -99,7 +99,7 @@ func UpdateProject(db *sql.DB, project *Project) error {
 }
 
 // GetProjects obtiene todos los proyectos de la base de datos
-func GetProjects(db *sql.DB) ([]*Project, error) {
+func GetAllProjects(db *sql.DB) ([]*Project, error) {
 	query := `
 	SELECT id, name, identifier, description, parent_id, created_on, updated_on
 	FROM projects
@@ -197,7 +197,7 @@ func DropProjectsTable(db *sql.DB) error {
 }
 
 func TestProjectsTable(db *sql.DB) error {
-	// Crear un proyecto de ejemplo
+	// Crear un proyecto de prueba
 	project0 := &Project{
 		Name:        "Proyecto de ejemplo",
 		Identifier:  "ejemplo",
@@ -218,7 +218,7 @@ func TestProjectsTable(db *sql.DB) error {
 	// comprobar que el proyecto se ha creado correctamente
 	if project1.Name != project0.Name || project1.Identifier != project0.Identifier || project1.Description != project0.Description {
 		fmt.Println("El proyecto no se ha creado correctamente")
-		return err
+		return fmt.Errorf("el proyecto no se ha creado correctamente")
 	}
 	// actualizar el proyecto creado
 	project1.Name = "Proyecto de ejemplo actualizado"
@@ -238,7 +238,7 @@ func TestProjectsTable(db *sql.DB) error {
 	// comprobar que el proyecto se ha actualizado correctamente
 	if project2.Name != project1.Name || project2.Identifier != project1.Identifier || project2.Description != project1.Description {
 		fmt.Println("El proyecto no se ha actualizado correctamente")
-		return err
+		return fmt.Errorf("el proyecto no se ha actualizado correctamente")
 	}
 	// eliminar el proyecto creado
 	err = DeleteProject(db, project_id)

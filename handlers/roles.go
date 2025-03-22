@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
+func GetRolesHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// Inicializar la base de datos
@@ -20,21 +20,21 @@ func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 		defer db.Close()
 
-		projects, err := models.GetAllProjects(db)
+		roles, err := models.GetAllRoles(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		count, err := models.CountProjects(db)
+		count, err := models.CountRoles(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		data := gin.H{
-			"projects": projects,
-			"count":    count,
+			"roles": roles,
+			"count": count,
 		}
 
 		c.JSON(http.StatusOK, data)
