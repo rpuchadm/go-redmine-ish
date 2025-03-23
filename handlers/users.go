@@ -73,8 +73,15 @@ func GetUserHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		trackers, err := models.GetAllTrackers(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 		data := gin.H{
-			"user": user,
+			"user":     user,
+			"trackers": trackers,
 		}
 
 		roles, err := models.GetRolesByUserID(db, id)
