@@ -340,7 +340,7 @@ type CategoryNumberOfIssues struct {
 	NumberOfIssues int `json:"number_of_issues"`
 }
 
-func GetCountIssuesByCategoryWhereProject(db *sql.DB, projectID int) ([]CategoryNumberOfIssues, error) {
+func CountIssuesByCategoryWhereProject(db *sql.DB, projectID int) ([]CategoryNumberOfIssues, error) {
 	query := `
 	SELECT 
 		category_id, COUNT(*) as number_of_issues
