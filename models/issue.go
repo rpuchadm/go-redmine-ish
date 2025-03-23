@@ -334,3 +334,39 @@ func SampleIssues(db *sql.DB) error {
 
 	return nil
 }
+
+type CategoryNumberOfIssues struct {
+	CategoryIDID   int `json:"category_id"`
+	NumberOfIssues int `json:"number_of_issues"`
+}
+
+func GetCountIssuesByCategoryWhereProject(db *sql.DB, projectID int) ([]CategoryNumberOfIssues, error) {
+	query := `
+	SELECT 
+		category_id, COUNT(*) as number_of_issues
+	FROM issues
+	WHERE project_id = $1
+	GROUP BY category_id`
+
+	rows, err := db.Query(query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []CategoryNumberOfIssues
+	for rows.Next() {
+		var category CategoryNumberOfIssues
+		err := rows.Scan(
+			&category.CategoryIDID,
+			&category.NumberOfIssues,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		categories = append(categories, category)
+	}
+
+	return categories, nil
+}

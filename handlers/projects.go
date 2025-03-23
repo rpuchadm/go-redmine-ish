@@ -91,6 +91,16 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 			data["users"] = users
 		}
 
+		categorynumberofissues, err := models.CountIssuesByCategoryWhereProject(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(categorynumberofissues) > 0 {
+			data["categorynumberofissues"] = categorynumberofissues
+		}
+
 		c.JSON(http.StatusOK, data)
 	}
 }
