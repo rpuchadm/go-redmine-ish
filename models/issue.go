@@ -78,6 +78,39 @@ func GetIssuesByProjectID(db *sql.DB, projectID int) ([]Issue, error) {
 	return issues, nil
 }
 
+func GetIssuesByCategoryID(db *sql.DB, categoryID int) ([]Issue, error) {
+	query := `SELECT i.id, i.subject, i.description, i.tracker_id, i.project_id, i.assigned_to_id, i.status, i.created_at, i.updated_at FROM issues i JOIN projects p ON i.project_id = p.id WHERE p.category_id = $1`
+
+	rows, err := db.Query(query, categoryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var issues []Issue
+	for rows.Next() {
+		var issue Issue
+		err := rows.Scan(
+			&issue.ID,
+			&issue.Subject,
+			&issue.Description,
+			&issue.TrackerID,
+			&issue.ProjectID,
+			&issue.AssignedToID,
+			&issue.Status,
+			&issue.CreatedAt,
+			&issue.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		issues = append(issues, issue)
+	}
+
+	return issues, nil
+}
+
 // UpdateIssue actualiza un ticket existente en la base de datos
 func UpdateIssue(db *sql.DB, issue *Issue) error {
 	query := `UPDATE issues SET subject = $1, description = $2, tracker_id = $3, project_id = $4, assigned_to_id = $5, status = $6, updated_at = NOW() WHERE id = $7`

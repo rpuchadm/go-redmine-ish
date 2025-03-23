@@ -38,6 +38,8 @@ func main() {
 
 	authGroup.GET("/auth", handlers.GetAuthHandler(cfg))
 
+	authGroup.GET("/category/:id", handlers.GetCategoryHandler(cfg))
+
 	authGroup.GET("/projects", handlers.GetProjectsHandler(cfg))
 	authGroup.GET("/project/:id", handlers.GetProjectHandler(cfg))
 	authGroup.POST("/project", handlers.CreateProjectHandler(cfg))
