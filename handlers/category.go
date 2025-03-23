@@ -41,9 +41,16 @@ func GetCategoryHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		trackers, err := models.GetAllTrackers(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 		data := gin.H{
 			"category": category,
 			"project":  project,
+			"trackers": trackers,
 		}
 
 		issues, err := models.GetIssuesByCategoryID(db, id)

@@ -143,6 +143,45 @@ func GetIssuesByCategoryID(db *sql.DB, categoryID int) ([]Issue, error) {
 	return issues, nil
 }
 
+func GetIssuesByUserID(db *sql.DB, userID int) ([]Issue, error) {
+	query := `
+		SELECT 
+			id, subject, description, tracker_id, project_id,
+			assigned_to_id, status, category_id,
+			created_at, updated_at
+		FROM issues where assigned_to_id = $1`
+
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var issues []Issue
+	for rows.Next() {
+		var issue Issue
+		err := rows.Scan(
+			&issue.ID,
+			&issue.Subject,
+			&issue.Description,
+			&issue.TrackerID,
+			&issue.ProjectID,
+			&issue.AssignedToID,
+			&issue.Status,
+			&issue.CategoryID,
+			&issue.CreatedAt,
+			&issue.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		issues = append(issues, issue)
+	}
+
+	return issues, nil
+}
+
 // UpdateIssue actualiza un ticket existente en la base de datos
 func UpdateIssue(db *sql.DB, issue *Issue) error {
 	query := `

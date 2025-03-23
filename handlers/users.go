@@ -87,6 +87,16 @@ func GetUserHandler(cfg *config.Config) gin.HandlerFunc {
 			data["roles"] = roles
 		}
 
+		issues, err := models.GetIssuesByUserID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(issues) > 0 {
+			data["issues"] = issues
+		}
+
 		c.JSON(http.StatusOK, data)
 	}
 }

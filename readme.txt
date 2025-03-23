@@ -22,3 +22,10 @@ Resumen de dependencias
 
         custom_field_values → custom_fields.
 -----
+
+posible reforma de dominios
+dominio (id,nombre,descripcion)
+project -> dominio
+tracker -> dominio
+roles -> dominio
+users -> dominio
