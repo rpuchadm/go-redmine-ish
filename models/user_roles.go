@@ -46,6 +46,29 @@ func GetUserRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
 	return roles, nil
 }
 
+func GetAllUsersRoles(db *sql.DB) ([]*UserRole, error) {
+	query := `SELECT user_id, role_id FROM user_roles`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	userRoles := []*UserRole{}
+	for rows.Next() {
+		userRole := &UserRole{}
+		err := rows.Scan(&userRole.UserID, &userRole.RoleID)
+		if err != nil {
+			return nil, err
+		}
+
+		userRoles = append(userRoles, userRole)
+	}
+
+	return userRoles, nil
+}
+
 // DeleteUserRoles elimina todas las relaciones de un usuario
 func DeleteUserRoles(db *sql.DB, userID int) error {
 	query := `DELETE FROM user_roles WHERE user_id = $1`
@@ -92,32 +115,6 @@ func DeleteRoleUser(db *sql.DB, roleID, userID int) error {
 	}
 
 	return nil
-}
-
-// CountUserRoles cuenta el número de roles de un usuario
-func CountUserRoles(db *sql.DB, userID int) (int, error) {
-	query := `SELECT COUNT(*) FROM user_roles WHERE user_id = $1`
-
-	var count int
-	err := db.QueryRow(query, userID).Scan(&count)
-	if err != nil {
-		return 0, err
-	}
-
-	return count, nil
-}
-
-// CountRoleUsers cuenta el número de usuarios de un rol
-func CountRoleUsers(db *sql.DB, roleID int) (int, error) {
-	query := `SELECT COUNT(*) FROM user_roles WHERE role_id = $1`
-
-	var count int
-	err := db.QueryRow(query, roleID).Scan(&count)
-	if err != nil {
-		return 0, err
-	}
-
-	return count, nil
 }
 
 func CreateUsersRolesTable(db *sql.DB) error {

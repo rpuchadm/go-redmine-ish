@@ -27,15 +27,22 @@ func GetUsersHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		count, err := models.CountUsers(db)
+		roles, err := models.GetAllRoles(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		user_roles, err := models.GetAllUsersRoles(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		data := gin.H{
-			"users": users,
-			"count": count,
+			"users":      users,
+			"roles":      roles,
+			"user_roles": user_roles,
 		}
 
 		c.JSON(http.StatusOK, data)
