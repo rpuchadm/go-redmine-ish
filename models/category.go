@@ -2,19 +2,6 @@ package models
 
 import "database/sql"
 
-/*
-CREATE TABLE IF NOT EXISTS categories (
-    id SERIAL PRIMARY KEY,              -- Identificador único de la categoría
-    project_id INT NOT NULL,            -- ID del proyecto al que pertenece la categoría
-    name VARCHAR(255) NOT NULL,         -- Nombre de la categoría
-    assigned_to_id INT,                 -- ID del usuario asignado por defecto a los issues de esta categoría
-    created_at TIMESTAMP DEFAULT NOW(), -- Fecha de creación de la categoría
-    updated_at TIMESTAMP DEFAULT NOW(), -- Fecha de última actualización de la categoría
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (assigned_to_id) REFERENCES users(id) ON DELETE SET NULL
-);
-*/
-
 type Category struct {
 	ID           int    `json:"id"`
 	ProjectID    int    `json:"project_id"`
@@ -61,6 +48,34 @@ func GetCategoriesByProjectID(db *sql.DB, projectID int) ([]Category, error) {
 	FROM categories
 	WHERE project_id = $1`
 	rows, err := db.Query(query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	categories := []Category{}
+	for rows.Next() {
+		var category Category
+		if err := rows.Scan(&category.ID, &category.ProjectID, &category.Name, &category.AssignedToID, &category.CreatedAt, &category.UpdatedAt); err != nil {
+			return nil, err
+		}
+		categories = append(categories, category)
+	}
+
+	return categories, nil
+}
+
+func GetCategoriesByUserID(db *sql.DB, userID int) ([]Category, error) {
+	query := `
+	SELECT id, project_id, name, assigned_to_id, created_at, updated_at
+	FROM categories
+	WHERE assigned_to_id = $1
+	or id in (
+		select category_id from issues
+		where assigned_to_id = $1
+	)
+	`
+	rows, err := db.Query(query, userID)
 	if err != nil {
 		return nil, err
 	}

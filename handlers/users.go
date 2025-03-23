@@ -97,6 +97,26 @@ func GetUserHandler(cfg *config.Config) gin.HandlerFunc {
 			data["issues"] = issues
 		}
 
+		projects, err := models.GetProjectsByUserID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(projects) > 0 {
+			data["projects"] = projects
+		}
+
+		categories, err := models.GetCategoriesByUserID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(categories) > 0 {
+			data["categories"] = categories
+		}
+
 		c.JSON(http.StatusOK, data)
 	}
 }

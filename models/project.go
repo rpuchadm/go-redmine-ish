@@ -73,6 +73,52 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 	return project, nil
 }
 
+func GetProjectsByUserID(db *sql.DB, userID int) ([]*Project, error) {
+	query := `
+	SELECT id, name, identifier, description, parent_id, created_on, updated_on
+	FROM projects
+	WHERE id IN (
+		SELECT project_id
+		FROM issues
+		WHERE assigned_to_id = $1
+	) or id IN (
+	 	select project_id
+		from categories
+		where assigned_to_id = $1
+	)
+	`
+
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		log.Printf("Error al obtener los proyectos: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	projects := []*Project{}
+	for rows.Next() {
+		project := &Project{}
+
+		err := rows.Scan(
+			&project.ID,
+			&project.Name,
+			&project.Identifier,
+			&project.Description,
+			&project.ParentID,
+			&project.CreatedOn,
+			&project.UpdatedOn,
+		)
+		if err != nil {
+			log.Printf("Error al escanear el proyecto: %v", err)
+			return nil, err
+		}
+
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
 // UpdateProject actualiza un proyecto existente en la base de datos
 func UpdateProject(db *sql.DB, project *Project) error {
 	query := `
