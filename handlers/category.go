@@ -56,6 +56,16 @@ func GetCategoryHandler(cfg *config.Config) gin.HandlerFunc {
 			data["issues"] = issues
 		}
 
+		users, err := models.GetUsersByCategoryID(db, category.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(users) > 0 {
+			data["users"] = users
+		}
+
 		c.JSON(http.StatusOK, data)
 	}
 }

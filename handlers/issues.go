@@ -27,15 +27,8 @@ func GetIssuesHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		count, err := models.CountIssues(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
 		data := gin.H{
 			"issues": issues,
-			"count":  count,
 		}
 
 		c.JSON(http.StatusOK, data)
