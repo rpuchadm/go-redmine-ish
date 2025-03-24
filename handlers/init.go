@@ -251,6 +251,20 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 			}
 		}
 
+		// members
+		err = models.CreateMembersTable(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if sample {
+			err = models.SampleMembers(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
 		c.JSON(http.StatusOK, gin.H{"message": "Base de datos inicializada correctamente"})
 	}
 }
