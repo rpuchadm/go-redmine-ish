@@ -182,8 +182,8 @@ func SampleMembers(db *sql.DB) error {
 			(user_id, project_id, role_id, created_at, updated_at)
 			VALUES 
 			(2, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-			(3, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-			(4, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+			(3, 2, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+			(4, 2, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		`
 	_, err := db.Exec(query)
 	return err
