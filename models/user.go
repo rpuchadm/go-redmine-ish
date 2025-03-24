@@ -306,6 +306,10 @@ func GetUsersByProjectID(db *sql.DB, project_id int) ([]*User, error) {
 		select assigned_to_id
 		from categories
 		where project_id = $1
+	) or id IN (
+	 	select user_id
+		from members
+		where project_id = $1
 	)
 	`
 

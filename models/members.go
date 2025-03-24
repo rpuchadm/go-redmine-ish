@@ -152,7 +152,7 @@ func DeleteMembersByUserID(db *sql.DB, userID int) error {
 	return err
 }
 
-func CreateTableMembers(db *sql.DB) error {
+func CreateMembersTable(db *sql.DB) error {
 	query := `
 	CREATE TABLE IF NOT EXISTS members (
 		id SERIAL PRIMARY KEY,
@@ -161,14 +161,23 @@ func CreateTableMembers(db *sql.DB) error {
 		role_id INT,
 		created_at TIMESTAMP,
 		updated_at TIMESTAMP
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+		FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+		FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 	)`
 
 	_, err := db.Exec(query)
 	return err
 }
 
-func DropTableMembers(db *sql.DB) error {
+func DropMembersTable(db *sql.DB) error {
 	query := `DROP TABLE IF EXISTS members`
+	_, err := db.Exec(query)
+	return err
+}
+
+func SampleMembers(db *sql.DB) error {
+	query := `INSERT INTO members (user_id, project_id, role_id, created_at, updated_at) VALUES (2, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
 	_, err := db.Exec(query)
 	return err
 }

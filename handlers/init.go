@@ -26,6 +26,11 @@ func InitHandler(cfg *config.Config) gin.HandlerFunc {
 		sample := true
 
 		if drop {
+			err = models.DropMembersTable(db)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 			err = models.DropCategoriesTable(db)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
