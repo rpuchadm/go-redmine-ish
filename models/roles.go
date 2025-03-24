@@ -221,10 +221,13 @@ func TestRolesTable(db *sql.DB) error {
 // GetRolesByUserID obtiene los roles de un usuario
 func GetRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
 	query := `
-	SELECT r.id, r.name, r.description
+	SELECT id, name, description
 	FROM roles r
-	JOIN user_roles ur ON r.id = ur.role_id
-	WHERE ur.user_id = $1`
+	WHERE r.id IN (
+		SELECT role_id
+		FROM user_roles
+		WHERE user_id = $1
+	)`
 
 	rows, err := db.Query(query, userID)
 	if err != nil {

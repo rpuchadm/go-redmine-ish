@@ -67,8 +67,15 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		roles, err := models.GetAllRoles(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 		data := gin.H{
 			"project": project,
+			"roles":   roles,
 		}
 
 		categories, err := models.GetCategoriesByProjectID(db, id)
@@ -89,6 +96,16 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		if len(users) > 0 {
 			data["users"] = users
+		}
+
+		members, err := models.GetMembersByProjectID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(members) > 0 {
+			data["members"] = members
 		}
 
 		categorynumberofissues, err := models.CountIssuesByCategoryWhereProject(db, id)

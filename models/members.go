@@ -160,7 +160,7 @@ func CreateMembersTable(db *sql.DB) error {
 		project_id INT,
 		role_id INT,
 		created_at TIMESTAMP,
-		updated_at TIMESTAMP
+		updated_at TIMESTAMP,
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 		FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
 		FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
@@ -177,7 +177,14 @@ func DropMembersTable(db *sql.DB) error {
 }
 
 func SampleMembers(db *sql.DB) error {
-	query := `INSERT INTO members (user_id, project_id, role_id, created_at, updated_at) VALUES (2, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+	query := `
+		INSERT INTO members 
+			(user_id, project_id, role_id, created_at, updated_at)
+			VALUES 
+			(2, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+			(3, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+			(4, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		`
 	_, err := db.Exec(query)
 	return err
 }

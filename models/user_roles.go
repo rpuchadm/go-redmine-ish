@@ -150,8 +150,8 @@ func SampleUsersRoles(db *sql.DB) error {
 
 	query := `INSERT INTO user_roles (user_id, role_id) VALUES
 		(2, 2),
-		(2, 3),
-		(3, 2)
+		(3, 3),
+		(4, 4)
 		`
 
 	_, err := db.Exec(query)
