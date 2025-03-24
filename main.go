@@ -66,6 +66,8 @@ func main() {
 	authGroup.PUT("/issue/:id", handlers.UpdateIssueHandler(cfg))
 	authGroup.DELETE("/issue/:id", handlers.DeleteIssueHandler(cfg))
 
+	authGroup.GET("/settings", handlers.GetSettingsHandler(cfg))
+
 	// Iniciar el servidor
 	if err := router.Run(":8080"); err != nil {
 		panic(err)

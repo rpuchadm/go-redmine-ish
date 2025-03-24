@@ -52,7 +52,7 @@ func GetTrackerByName(db *sql.DB, name string) (*Tracker, error) {
 }
 
 // GetAllTrackers obtiene todos los trackers
-func GetAllTrackers(db *sql.DB) ([]*Tracker, error) {
+func GetAllTrackers(db *sql.DB) ([]Tracker, error) {
 	query := `SELECT id, name, description FROM trackers`
 
 	rows, err := db.Query(query)
@@ -61,9 +61,9 @@ func GetAllTrackers(db *sql.DB) ([]*Tracker, error) {
 	}
 	defer rows.Close()
 
-	trackers := []*Tracker{}
+	trackers := []Tracker{}
 	for rows.Next() {
-		tracker := &Tracker{}
+		tracker := Tracker{}
 
 		err := rows.Scan(
 			&tracker.ID,
