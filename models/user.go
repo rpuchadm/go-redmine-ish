@@ -298,7 +298,7 @@ func GetUsersByIssueID(db *sql.DB, issue_id int) ([]*User, error) {
 	return users, nil
 }
 
-func GetUsersByProjectID(db *sql.DB, project_id int) ([]*User, error) {
+func GetUsersByProjectID(db *sql.DB, project_id int) ([]User, error) {
 	query := `
 	SELECT id, username, email, password_hash, created_at, updated_at
 	FROM users
@@ -319,9 +319,9 @@ func GetUsersByProjectID(db *sql.DB, project_id int) ([]*User, error) {
 	}
 	defer rows.Close()
 
-	users := []*User{}
+	users := []User{}
 	for rows.Next() {
-		user := &User{}
+		user := User{}
 
 		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {

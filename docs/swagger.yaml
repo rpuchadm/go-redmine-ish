@@ -1,0 +1,244 @@
+definitions:
+  handlers.ErrorJson:
+    properties:
+      error:
+        type: string
+    type: object
+  handlers.GetCategoryHandlerData:
+    properties:
+      category:
+        $ref: '#/definitions/models.Category'
+      issues:
+        items:
+          $ref: '#/definitions/models.Issue'
+        type: array
+      project:
+        $ref: '#/definitions/models.Project'
+      trackers:
+        items:
+          $ref: '#/definitions/models.Tracker'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
+  handlers.GetProjectsHandlerData:
+    properties:
+      count:
+        type: integer
+      projects:
+        items:
+          $ref: '#/definitions/models.Project'
+        type: array
+    type: object
+  models.Category:
+    properties:
+      assigned_to_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      project_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Issue:
+    properties:
+      assigned_to_id:
+        type: integer
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      project_id:
+        type: integer
+      status:
+        type: string
+      subject:
+        type: string
+      tracker_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Project:
+    properties:
+      created_on:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      identifier:
+        type: string
+      name:
+        type: string
+      parent_id:
+        description: Usamos *int para manejar valores NULL
+        type: integer
+      updated_on:
+        type: string
+    type: object
+  models.Tracker:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password_hash:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API para gestionar proyectos, usuarios, roles, categorías y problemas
+    al estilo de Redmine.
+  termsOfService: http://swagger.io/terms/
+  title: Go Redmine-ish API
+  version: "1.0"
+paths:
+  /category:
+    post:
+      parameters:
+      - description: Category
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Category'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+      security:
+      - Bearer: []
+  /category/{id}:
+    delete:
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+      security:
+      - Bearer: []
+    get:
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetCategoryHandlerData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+      security:
+      - Bearer: []
+    put:
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Category'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorJson'
+      security:
+      - Bearer: []
+  /healthz:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+  /projects:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetProjectsHandlerData'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+swagger: "2.0"

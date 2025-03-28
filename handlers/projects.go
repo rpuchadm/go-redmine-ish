@@ -56,12 +56,12 @@ func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 }
 
 type GetProjectHandlerData struct {
-	Project        models.Project                  `json:"project"`
-	Roles          []models.Role                   `json:"roles"`
-	Categories     []models.Category               `json:"categories,omitempty"`
-	Users          []models.User                   `json:"users,omitempty"`
-	Members        []models.Member                 `json:"members,omitempty"`
-	CategoryIssues []models.CategoryNumberOfIssues `json:"categorynumberofissues,omitempty"`
+	Project                models.Project                  `json:"project"`
+	Roles                  []models.Role                   `json:"roles"`
+	Categories             []models.Category               `json:"categories,omitempty"`
+	Users                  []models.User                   `json:"users,omitempty"`
+	Members                []models.Member                 `json:"members,omitempty"`
+	CategoryNumberOfIssues []models.CategoryNumberOfIssues `json:"categorynumberofissues,omitempty"`
 }
 
 // @Summary: GetProjectHandler
@@ -110,7 +110,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		if len(categories) > 0 {
-			data["categories"] = categories
+			data.Categories = categories
 		}
 
 		users, err := models.GetUsersByProjectID(db, id)
@@ -120,7 +120,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		if len(users) > 0 {
-			data["users"] = users
+			data.Users = users
 		}
 
 		members, err := models.GetMembersByProjectID(db, id)
@@ -130,7 +130,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		if len(members) > 0 {
-			data["members"] = members
+			data.Members = members
 		}
 
 		categorynumberofissues, err := models.CountIssuesByCategoryWhereProject(db, id)
@@ -140,7 +140,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		if len(categorynumberofissues) > 0 {
-			data["categorynumberofissues"] = categorynumberofissues
+			data.CategoryNumberOfIssues = categorynumberofissues
 		}
 
 		c.JSON(http.StatusOK, data)
