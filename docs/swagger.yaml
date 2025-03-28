@@ -380,10 +380,10 @@ paths:
               type: string
             type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
 securityDefinitions:
   BearerAuth:
-    description: Token de autenticación
+    description: 'Ingresa el token en formato: "Bearer {token}"'
     in: header
     name: Authorization
     type: apiKey

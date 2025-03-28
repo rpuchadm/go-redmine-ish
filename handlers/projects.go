@@ -22,7 +22,7 @@ type GetProjectsHandlerData struct {
 // @Success 200 {object} GetProjectsHandlerData
 // @Failure 500 {object} map[string]string
 // @Router /projects [get]
-// @Security Bearer
+// @Security BearerAuth
 func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 

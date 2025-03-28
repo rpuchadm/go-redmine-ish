@@ -4,7 +4,7 @@
 // @securityDefinitions.apikey  BearerAuth
 // @in                          header
 // @name                        Authorization
-// @description                 Token de autenticación
+// @description                 Ingresa el token en formato: "Bearer {token}"
 // @host                        issues.mydomain.com
 // @BasePath                    /api
 // @schemes                    https

@@ -331,7 +331,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "Bearer": []
+                        "BearerAuth": []
                     }
                 ],
                 "responses": {
@@ -617,7 +617,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "BearerAuth": {
-            "description": "Token de autenticación",
+            "description": "Ingresa el token en formato: \"Bearer {token}\"",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
