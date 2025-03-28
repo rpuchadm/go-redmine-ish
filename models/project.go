@@ -73,7 +73,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 	return project, nil
 }
 
-func GetProjectsByUserID(db *sql.DB, userID int) ([]*Project, error) {
+func GetProjectsByUserID(db *sql.DB, userID int) ([]Project, error) {
 	query := `
 	SELECT id, name, identifier, description, parent_id, created_on, updated_on
 	FROM projects
@@ -95,9 +95,9 @@ func GetProjectsByUserID(db *sql.DB, userID int) ([]*Project, error) {
 	}
 	defer rows.Close()
 
-	projects := []*Project{}
+	projects := []Project{}
 	for rows.Next() {
-		project := &Project{}
+		project := Project{}
 
 		err := rows.Scan(
 			&project.ID,

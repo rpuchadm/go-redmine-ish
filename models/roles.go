@@ -219,7 +219,7 @@ func TestRolesTable(db *sql.DB) error {
 }
 
 // GetRolesByUserID obtiene los roles de un usuario
-func GetRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
+func GetRolesByUserID(db *sql.DB, userID int) ([]Role, error) {
 	query := `
 	SELECT id, name, description
 	FROM roles r
@@ -235,9 +235,9 @@ func GetRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
 	}
 	defer rows.Close()
 
-	roles := []*Role{}
+	roles := []Role{}
 	for rows.Next() {
-		role := &Role{}
+		role := Role{}
 
 		err := rows.Scan(
 			&role.ID,

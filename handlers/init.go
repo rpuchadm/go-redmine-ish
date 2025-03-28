@@ -10,6 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary: InitHandler
+// @Description: Initialize the database
+// @Tags: init
+// @Produce: json
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /init [get]
 func InitHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 

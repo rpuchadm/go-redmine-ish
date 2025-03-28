@@ -9,6 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GetSettingsHandlerData struct {
+	Trackers []models.Tracker `json:"trackers"`
+}
+
+// @Summary: GetSettingsHandler
+// @Description: Get settings
+// @Tags: settings
+// @Produce: json
+// @Success 200 {object} GetSettingsHandlerData
+// @Failure 500 {object} map[string]string
+// @Router /settings [get]
+// @Security BearerAuth
 func GetSettingsHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -20,7 +32,7 @@ func GetSettingsHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 		defer db.Close()
 
-		data := gin.H{}
+		data := GetSettingsHandlerData{}
 
 		trackers, err := models.GetAllTrackers(db)
 		if err != nil {
@@ -29,7 +41,7 @@ func GetSettingsHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		if len(trackers) > 0 {
-			data["trackers"] = trackers
+			data.Trackers = trackers
 		}
 
 		c.JSON(http.StatusOK, data)

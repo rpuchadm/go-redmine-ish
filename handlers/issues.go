@@ -10,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GetIssuesHandlerData struct {
+	Issues []models.Issue `json:"issues"`
+}
+
+// @Summary: InitHandler
+// @Description: Initialize the database
+// @Tags: init
+// @Produce: json
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /init [get]
+// @Security BearerAuth
 func GetIssuesHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -27,14 +39,33 @@ func GetIssuesHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		data := gin.H{
-			"issues": issues,
+		data := GetIssuesHandlerData{
+			Issues: issues,
 		}
 
 		c.JSON(http.StatusOK, data)
 	}
 }
 
+type GetIssueHandlerData struct {
+	Issue    models.Issue     `json:"issue"`
+	Tracker  models.Tracker   `json:"tracker"`
+	Project  models.Project   `json:"project,omitempty"`
+	Users    []models.User    `json:"users,omitempty"`
+	Comments []models.Comment `json:"comments,omitempty"`
+}
+
+// @Summary: GetIssueHandler
+// @Description: Get an issue by ID
+// @Tags: issues
+// @Produce: json
+// @Param id path int true "Issue ID"
+// @Success 200 {object} GetIssueHandlerData
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /issue/{id} [get]
+// @Security BearerAuth
 func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -42,92 +73,103 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
 
 		issue, err := models.GetIssueByID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if issue == nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
 			return
 		}
 
 		tracker, err := models.GetTrackerByID(db, issue.TrackerID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		data := gin.H{
-			"issue":   issue,
-			"tracker": tracker,
+		data := GetIssueHandlerData{
+			Issue:   *issue,
+			Tracker: *tracker,
 		}
 
 		if issue.ProjectID != nil {
 			project, err := models.GetProjectByID(db, *issue.ProjectID)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
-			data["project"] = project
+			data.Project = *project
 		}
 
 		users, err := models.GetUsersByIssueID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if len(users) > 0 {
-			data["users"] = users
+			data.Users = users
 		}
 
 		comments, err := models.GetCommentsByIssueID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if len(comments) > 0 {
-			data["comments"] = comments
+			data.Comments = comments
 		}
 
 		c.JSON(http.StatusOK, data)
 	}
 }
 
+// @Summary: CreateIssueHandler
+// @Description: Create a new issue
+// @Tags: issues
+// @Accept: json
+// @Produce: json
+// @Param issue body models.Issue true "Issue"
+// @Success 201 {object} models.Issue
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /issue [post]
+// @Security BearerAuth
 func CreateIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var issue models.Issue
 		if err := c.ShouldBindJSON(&issue); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
 
 		id, err := models.CreateIssue(db, &issue)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		issue.ID = id
@@ -136,6 +178,19 @@ func CreateIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: UpdateIssueHandler
+// @Description: Update an issue by ID
+// @Tags: issues
+// @Accept: json
+// @Produce: json
+// @Param id path int true "Issue ID"
+// @Param issue body models.Issue true "Issue"
+// @Success 200 {object} models.Issue
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /issue/{id} [put]
+// @Security BearerAuth
 func UpdateIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -143,37 +198,37 @@ func UpdateIssueHandler(cfg *config.Config) gin.HandlerFunc {
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		var issue models.Issue
 		if err := c.ShouldBindJSON(&issue); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		if id != issue.ID {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "ID in body and URL do not match"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "ID in body and URL do not match"})
 			return
 		}
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
 
 		if err := models.UpdateIssue(db, &issue); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		updated, err := models.GetIssueByID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -181,6 +236,18 @@ func UpdateIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: UpdateIssueHandler
+// @Description: Update an issue by ID
+// @Tags: issues
+// @Accept: json
+// @Produce: json
+// @Param id path int true "Issue ID"
+// @Success 204 {object} nil
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /issue/{id} [delete]
+// @Security BearerAuth
 func DeleteIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -188,20 +255,20 @@ func DeleteIssueHandler(cfg *config.Config) gin.HandlerFunc {
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
 
 		if err := models.DeleteIssue(db, id); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 

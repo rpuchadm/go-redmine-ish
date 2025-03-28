@@ -18,6 +18,23 @@ definitions:
           $ref: '#/definitions/models.User'
         type: array
     type: object
+  handlers.GetIssueHandlerData:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      issue:
+        $ref: '#/definitions/models.Issue'
+      project:
+        $ref: '#/definitions/models.Project'
+      tracker:
+        $ref: '#/definitions/models.Tracker'
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
   handlers.GetProjectHandlerData:
     properties:
       categories:
@@ -52,6 +69,81 @@ definitions:
           $ref: '#/definitions/models.Project'
         type: array
     type: object
+  handlers.GetRolesHandlerData:
+    properties:
+      count:
+        type: integer
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+    type: object
+  handlers.GetSettingsHandlerData:
+    properties:
+      trackers:
+        items:
+          $ref: '#/definitions/models.Tracker'
+        type: array
+    type: object
+  handlers.GetTrackersHandlerData:
+    properties:
+      count:
+        type: integer
+      trackers:
+        items:
+          $ref: '#/definitions/models.Tracker'
+        type: array
+    type: object
+  handlers.GetUserHandlerData:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
+      issues:
+        items:
+          $ref: '#/definitions/models.Issue'
+        type: array
+      projects:
+        items:
+          $ref: '#/definitions/models.Project'
+        type: array
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+      trackers:
+        items:
+          $ref: '#/definitions/models.Tracker'
+        type: array
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  handlers.GetUsersHandlerData:
+    properties:
+      count:
+        type: integer
+      projects:
+        items:
+          $ref: '#/definitions/models.Project'
+        type: array
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+      trackers:
+        items:
+          $ref: '#/definitions/models.Tracker'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      users_roles:
+        items:
+          $ref: '#/definitions/models.UserRole'
+        type: array
+    type: object
   models.Category:
     properties:
       assigned_to_id:
@@ -72,6 +164,21 @@ definitions:
       category_id:
         type: integer
       number_of_issues:
+        type: integer
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      issue_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
         type: integer
     type: object
   models.Issue:
@@ -163,6 +270,13 @@ definitions:
       username:
         type: string
     type: object
+  models.UserRole:
+    properties:
+      role_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
 info:
   contact: {}
   description: API para gestionar proyectos, usuarios, roles, categorías y problemas
@@ -170,6 +284,29 @@ info:
   title: Go Redmine-ish API
   version: "1.0"
 paths:
+  /auth:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
   /category:
     post:
       parameters:
@@ -290,6 +427,152 @@ paths:
             additionalProperties:
               type: string
             type: object
+  /init:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /issue:
+    post:
+      parameters:
+      - description: Issue
+        in: body
+        name: issue
+        required: true
+        schema:
+          $ref: '#/definitions/models.Issue'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Issue'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /issue/{id}:
+    delete:
+      parameters:
+      - description: Issue ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+    get:
+      parameters:
+      - description: Issue ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetIssueHandlerData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+    put:
+      parameters:
+      - description: Issue ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Issue
+        in: body
+        name: issue
+        required: true
+        schema:
+          $ref: '#/definitions/models.Issue'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Issue'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
   /project:
     post:
       parameters:
@@ -384,6 +667,232 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handlers.GetProjectsHandlerData'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /role:
+    post:
+      parameters:
+      - description: Role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/models.Role'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Role'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /role/{id}:
+    delete:
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+    get:
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Role'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /roles:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetRolesHandlerData'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /settings:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetSettingsHandlerData'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /trackers:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetTrackersHandlerData'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /user:
+    post:
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /user/{id}:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetUserHandlerData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+    put:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+  /users:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetUsersHandlerData'
         "500":
           description: Internal Server Error
           schema:

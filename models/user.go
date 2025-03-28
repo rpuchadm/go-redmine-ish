@@ -105,7 +105,7 @@ func CountUsers(db *sql.DB) (int, error) {
 }
 
 // GetUsers obtiene todos los usuarios
-func GetAllUsers(db *sql.DB) ([]*User, error) {
+func GetAllUsers(db *sql.DB) ([]User, error) {
 	query := `SELECT id, username, email, password_hash, created_at, updated_at FROM users`
 
 	rows, err := db.Query(query)
@@ -114,9 +114,9 @@ func GetAllUsers(db *sql.DB) ([]*User, error) {
 	}
 	defer rows.Close()
 
-	users := []*User{}
+	users := []User{}
 	for rows.Next() {
-		user := &User{}
+		user := User{}
 
 		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
@@ -262,7 +262,7 @@ func SampleUsers(db *sql.DB) error {
 	return nil
 }
 
-func GetUsersByIssueID(db *sql.DB, issue_id int) ([]*User, error) {
+func GetUsersByIssueID(db *sql.DB, issue_id int) ([]User, error) {
 	query := `
 	SELECT id, username, email, password_hash, created_at, updated_at
 	FROM users
@@ -283,9 +283,9 @@ func GetUsersByIssueID(db *sql.DB, issue_id int) ([]*User, error) {
 	}
 	defer rows.Close()
 
-	users := []*User{}
+	users := []User{}
 	for rows.Next() {
-		user := &User{}
+		user := User{}
 
 		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {

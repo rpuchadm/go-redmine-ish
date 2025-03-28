@@ -10,45 +10,81 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GetUsersHandlerData struct {
+	Users      []models.User     `json:"users"`
+	Count      int               `json:"count"`
+	Projects   []models.Project  `json:"projects"`
+	Trackers   []models.Tracker  `json:"trackers"`
+	UsersRoles []models.UserRole `json:"users_roles"`
+	Roles      []models.Role     `json:"roles"`
+}
+
+// @Summary: GetUsersHandler
+// @Description: Get all users
+// @Tags: users
+// @Produce: json
+// @Success 200 {object} GetUsersHandlerData
+// @Failure 500 {object} map[string]string
+// @Router /users [get]
+// @Security BearerAuth
 func GetUsersHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
 
 		users, err := models.GetAllUsers(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		roles, err := models.GetAllRoles(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		user_roles, err := models.GetAllUsersRoles(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		data := gin.H{
-			"users":      users,
-			"roles":      roles,
-			"user_roles": user_roles,
+		data := GetUsersHandlerData{
+			Users:      users,
+			Roles:      roles,
+			UsersRoles: user_roles,
 		}
 
 		c.JSON(http.StatusOK, data)
 	}
 }
 
+type GetUserHandlerData struct {
+	User       models.User       `json:"user"`
+	Trackers   []models.Tracker  `json:"trackers"`
+	Projects   []models.Project  `json:"projects,omitempty"`
+	Roles      []models.Role     `json:"roles,omitempty"`
+	Issues     []models.Issue    `json:"issues,omitempty"`
+	Categories []models.Category `json:"categories,omitempty"`
+}
+
+// @Summary: GetUserHandler
+// @Description: Get a user by ID
+// @Tags: users
+// @Produce: json
+// @Param id path int true "User ID"
+// @Success 200 {object} GetUserHandlerData
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /user/{id} [get]
+// @Security BearerAuth
 func GetUserHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -56,78 +92,89 @@ func GetUserHandler(cfg *config.Config) gin.HandlerFunc {
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		user, err := models.GetUserByID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		trackers, err := models.GetAllTrackers(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		data := gin.H{
-			"user":     user,
-			"trackers": trackers,
+		data := GetUserHandlerData{
+			User:     *user,
+			Trackers: trackers,
 		}
 
 		roles, err := models.GetRolesByUserID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if len(roles) > 0 {
-			data["roles"] = roles
+			data.Roles = roles
 		}
 
 		issues, err := models.GetIssuesByUserID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if len(issues) > 0 {
-			data["issues"] = issues
+			data.Issues = issues
 		}
 
 		projects, err := models.GetProjectsByUserID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if len(projects) > 0 {
-			data["projects"] = projects
+			data.Projects = projects
 		}
 
 		categories, err := models.GetCategoriesByUserID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if len(categories) > 0 {
-			data["categories"] = categories
+			data.Categories = categories
 		}
 
 		c.JSON(http.StatusOK, data)
 	}
 }
 
+// @Summary: CreateUserHandler
+// @Description: Create a new user
+// @Tags: users
+// @Accept: json
+// @Produce: json
+// @Param user body models.User true "User"
+// @Success 201 {object} models.User
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /user [post]
+// @Security BearerAuth
 func CreateUserHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
@@ -157,6 +204,18 @@ func CreateUserHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: UpdateUserHandler
+// @Description: Update a user by ID
+// @Tags: users
+// @Accept: json
+// @Produce: json
+// @Param id path int true "User ID"
+// @Param user body models.User true "User"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /user/{id} [put]
+// @Security BearerAuth
 func UpdateUserHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -196,6 +255,18 @@ func UpdateUserHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: UpdateUserHandler
+// @Description: Update a user by ID
+// @Tags: users
+// @Accept: json
+// @Produce: json
+// @Param id path int true "User ID"
+// @Param user body models.User true "User"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /user/{id} [put]
+// @Security BearerAuth
 func DeleteUserHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")

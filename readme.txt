@@ -29,3 +29,26 @@ project -> dominio
 tracker -> dominio
 roles -> dominio
 users -> dominio
+
+
+-------------
+swagger
+
+go install github.com/swaggo/swag/cmd/swag@latest
+
+swag init
+
+CUIDADO cuando se pasa swag init
+en docs/docs.go
+docs/docs.go:977:2: unknown field LeftDelim in struct literal of type "github.com/swaggo/swag".Spec
+docs/docs.go:978:2: unknown field RightDelim in struct literal of type "github.com/swaggo/swag".Spec
+	InfoInstanceName: "swagger",
+	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
+-->
+	InfoInstanceName: "swagger",
+	SwaggerTemplate:  docTemplate,
+	//LeftDelim:        "{{",
+	//RightDelim:       "}}",
+antes de compilar

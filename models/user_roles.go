@@ -46,7 +46,7 @@ func GetUserRolesByUserID(db *sql.DB, userID int) ([]*Role, error) {
 	return roles, nil
 }
 
-func GetAllUsersRoles(db *sql.DB) ([]*UserRole, error) {
+func GetAllUsersRoles(db *sql.DB) ([]UserRole, error) {
 	query := `SELECT user_id, role_id FROM user_roles`
 
 	rows, err := db.Query(query)
@@ -55,9 +55,9 @@ func GetAllUsersRoles(db *sql.DB) ([]*UserRole, error) {
 	}
 	defer rows.Close()
 
-	userRoles := []*UserRole{}
+	userRoles := []UserRole{}
 	for rows.Next() {
-		userRole := &UserRole{}
+		userRole := UserRole{}
 		err := rows.Scan(&userRole.UserID, &userRole.RoleID)
 		if err != nil {
 			return nil, err
