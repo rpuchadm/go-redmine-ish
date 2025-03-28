@@ -23,6 +23,31 @@ definitions:
           $ref: '#/definitions/models.User'
         type: array
     type: object
+  handlers.GetProjectHandlerData:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
+      categorynumberofissues:
+        items:
+          $ref: '#/definitions/models.CategoryNumberOfIssues'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/models.Member'
+        type: array
+      project:
+        $ref: '#/definitions/models.Project'
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
   handlers.GetProjectsHandlerData:
     properties:
       count:
@@ -47,6 +72,13 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.CategoryNumberOfIssues:
+    properties:
+      category_id:
+        type: integer
+      number_of_issues:
+        type: integer
+    type: object
   models.Issue:
     properties:
       assigned_to_id:
@@ -70,6 +102,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.Member:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      project_id:
+        type: integer
+      role_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   models.Project:
     properties:
       created_on:
@@ -86,6 +133,15 @@ definitions:
         description: Usamos *int para manejar valores NULL
         type: integer
       updated_on:
+        type: string
+    type: object
+  models.Role:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
         type: string
     type: object
   models.Tracker:
@@ -233,6 +289,92 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handlers.GetProjectsHandlerData'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+    post:
+      parameters:
+      - description: Project
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+  /projects/{id}:
+    get:
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetProjectHandlerData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+    put:
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Project
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:

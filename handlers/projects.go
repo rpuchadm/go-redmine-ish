@@ -67,6 +67,13 @@ type GetProjectHandlerData struct {
 // @Summary: GetProjectHandler
 // @Description: Get a project by ID
 // @Tags: projects
+// @Produce: json
+// @Param id path int true "Project ID"
+// @Success 200 {object} GetProjectHandlerData
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /projects/{id} [get]
+// @Security Bearer
 func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -147,6 +154,17 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: CreateProjectHandler
+// @Description: Create a new project
+// @Tags: projects
+// @Accept: json
+// @Produce: json
+// @Param project body models.Project true "Project"
+// @Success 201 {object} models.Project
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /projects [post]
+// @Security Bearer
 func CreateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var project models.Project
@@ -176,6 +194,18 @@ func CreateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: UpdateProjectHandler
+// @Description: Update a project by ID
+// @Tags: projects
+// @Accept: json
+// @Produce: json
+// @Param id path int true "Project ID"
+// @Param project body models.Project true "Project"
+// @Success 200 {object} models.Project
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /projects/{id} [put]
+// @Security Bearer
 func UpdateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -222,6 +252,18 @@ func UpdateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// @Summary: UpdateProjectHandler
+// @Description: Update a project by ID
+// @Tags: projects
+// @Accept: json
+// @Produce: json
+// @Param id path int true "Project ID"
+// @Param project body models.Project true "Project"
+// @Success 200 {object} models.Project
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /projects/{id} [put]
+// @Security Bearer
 func DeleteProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
