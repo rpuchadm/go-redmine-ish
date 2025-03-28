@@ -169,12 +169,9 @@ definitions:
         type: string
     type: object
 info:
-  contact:
-    name: API Support
-    url: http://www.swagger.io/support
+  contact: {}
   description: API para gestionar proyectos, usuarios, roles, categorías y problemas
     al estilo de Redmine.
-  termsOfService: http://swagger.io/terms/
   title: Go Redmine-ish API
   version: "1.0"
 paths:
