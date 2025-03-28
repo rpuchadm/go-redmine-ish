@@ -7,7 +7,7 @@
 // @description                 Ingresa el token en formato: "Bearer {token}"
 // @host                        issues.mydomain.com
 // @BasePath                    /api
-// @schemes                    https
+// @schemes                     https
 // @contact.name                API Support
 // @contact.url                 http://www.mydomain.com/support
 package main
