@@ -1,9 +1,4 @@
 definitions:
-  handlers.ErrorJson:
-    properties:
-      error:
-        type: string
-    type: object
   handlers.GetCategoryHandlerData:
     properties:
       category:
@@ -192,13 +187,17 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
   /category/{id}:
     delete:
       parameters:
@@ -213,13 +212,17 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
     get:
       parameters:
       - description: Category ID
@@ -235,13 +238,17 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
     put:
       parameters:
       - description: Category ID
@@ -263,13 +270,17 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ErrorJson'
+            additionalProperties:
+              type: string
+            type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
   /healthz:
     get:
       responses:
@@ -306,7 +317,7 @@ paths:
               type: string
             type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
   /project/{id}:
     get:
       parameters:
@@ -333,7 +344,7 @@ paths:
               type: string
             type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
     put:
       parameters:
       - description: Project ID
@@ -365,7 +376,7 @@ paths:
               type: string
             type: object
       security:
-      - Bearer: []
+      - BearerAuth: []
   /projects:
     get:
       responses:
