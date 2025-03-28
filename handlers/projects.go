@@ -10,38 +10,63 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GetProjectsHandlerData struct {
+	Projects []models.Project `json:"projects"`
+	Count    int              `json:"count"`
+}
+
+// @Summary: GetProjectsHandler
+// @Description: Get all projects
+// @Tags: projects
+// @Produce: json
+// @Success 200 {object} GetProjectsHandlerData
+// @Failure 500 {object} map[string]string
+// @Router /projects [get]
+// @Security Bearer
 func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
 
 		projects, err := models.GetAllProjects(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		count, err := models.CountProjects(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		data := gin.H{
-			"projects": projects,
-			"count":    count,
+		data := GetProjectsHandlerData{
+			Projects: projects,
+			Count:    count,
 		}
 
 		c.JSON(http.StatusOK, data)
 	}
 }
 
+type GetProjectHandlerData struct {
+	Project        models.Project                  `json:"project"`
+	Roles          []models.Role                   `json:"roles"`
+	Categories     []models.Category               `json:"categories,omitempty"`
+	Users          []models.User                   `json:"users,omitempty"`
+	Members        []models.Member                 `json:"members,omitempty"`
+	CategoryIssues []models.CategoryNumberOfIssues `json:"categorynumberofissues,omitempty"`
+}
+
+// @Summary: GetProjectHandler
+// @Description: Get a project by ID
+// @Tags: projects
 func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
@@ -49,7 +74,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer db.Close()
@@ -57,30 +82,30 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		project, err := models.GetProjectByID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		roles, err := models.GetAllRoles(db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		data := gin.H{
-			"project": project,
-			"roles":   roles,
+		data := GetProjectHandlerData{
+			Project: *project,
+			Roles:   roles,
 		}
 
 		categories, err := models.GetCategoriesByProjectID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -90,7 +115,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		users, err := models.GetUsersByProjectID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -100,7 +125,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		members, err := models.GetMembersByProjectID(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -110,7 +135,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		categorynumberofissues, err := models.CountIssuesByCategoryWhereProject(db, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 

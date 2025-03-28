@@ -52,7 +52,7 @@ func GetRoleByName(db *sql.DB, name string) (*Role, error) {
 }
 
 // GetAllRoles obtiene todos los roles
-func GetAllRoles(db *sql.DB) ([]*Role, error) {
+func GetAllRoles(db *sql.DB) ([]Role, error) {
 	query := `SELECT id, name, description FROM roles`
 
 	rows, err := db.Query(query)
@@ -61,9 +61,9 @@ func GetAllRoles(db *sql.DB) ([]*Role, error) {
 	}
 	defer rows.Close()
 
-	roles := []*Role{}
+	roles := []Role{}
 	for rows.Next() {
-		role := &Role{}
+		role := Role{}
 
 		err := rows.Scan(
 			&role.ID,

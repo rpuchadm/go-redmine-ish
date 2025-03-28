@@ -145,7 +145,7 @@ func UpdateProject(db *sql.DB, project *Project) error {
 }
 
 // GetProjects obtiene todos los proyectos de la base de datos
-func GetAllProjects(db *sql.DB) ([]*Project, error) {
+func GetAllProjects(db *sql.DB) ([]Project, error) {
 	query := `
 	SELECT id, name, identifier, description, parent_id, created_on, updated_on
 	FROM projects
@@ -158,9 +158,9 @@ func GetAllProjects(db *sql.DB) ([]*Project, error) {
 	}
 	defer rows.Close()
 
-	projects := []*Project{}
+	projects := []Project{}
 	for rows.Next() {
-		project := &Project{}
+		project := Project{}
 
 		err := rows.Scan(
 			&project.ID,
