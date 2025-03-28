@@ -72,7 +72,7 @@ type GetProjectHandlerData struct {
 // @Success 200 {object} GetProjectHandlerData
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /projects/{id} [get]
+// @Router /project/{id} [get]
 // @Security Bearer
 func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -163,7 +163,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 // @Success 201 {object} models.Project
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /projects [post]
+// @Router /project [post]
 // @Security Bearer
 func CreateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -204,7 +204,7 @@ func CreateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 // @Success 200 {object} models.Project
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /projects/{id} [put]
+// @Router /project/{id} [put]
 // @Security Bearer
 func UpdateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -262,7 +262,7 @@ func UpdateProjectHandler(cfg *config.Config) gin.HandlerFunc {
 // @Success 200 {object} models.Project
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /projects/{id} [put]
+// @Router /project/{id} [put]
 // @Security Bearer
 func DeleteProjectHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {

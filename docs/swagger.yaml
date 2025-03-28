@@ -279,21 +279,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-  /projects:
-    get:
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.GetProjectsHandlerData'
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - Bearer: []
+  /project:
     post:
       parameters:
       - description: Project
@@ -321,7 +307,7 @@ paths:
             type: object
       security:
       - Bearer: []
-  /projects/{id}:
+  /project/{id}:
     get:
       parameters:
       - description: Project ID
@@ -372,6 +358,21 @@ paths:
             additionalProperties:
               type: string
             type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+  /projects:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetProjectsHandlerData'
         "500":
           description: Internal Server Error
           schema:
