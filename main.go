@@ -1,3 +1,10 @@
+// @title Go Redmine-ish API
+// @version 1.0
+// @description API para gestionar proyectos, usuarios, roles, categorías y problemas al estilo de Redmine.
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+
 package main
 
 import (
@@ -8,6 +15,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -39,6 +48,9 @@ func main() {
 	authGroup.GET("/auth", handlers.GetAuthHandler(cfg))
 
 	authGroup.GET("/category/:id", handlers.GetCategoryHandler(cfg))
+	authGroup.POST("/category", handlers.CreateCategoryHandler(cfg))
+	authGroup.PUT("/category/:id", handlers.UpdateCategoryHandler(cfg))
+	authGroup.DELETE("/category/:id", handlers.DeleteCategoryHandler(cfg))
 
 	authGroup.GET("/projects", handlers.GetProjectsHandler(cfg))
 	authGroup.GET("/project/:id", handlers.GetProjectHandler(cfg))
@@ -67,6 +79,8 @@ func main() {
 	authGroup.DELETE("/issue/:id", handlers.DeleteIssueHandler(cfg))
 
 	authGroup.GET("/settings", handlers.GetSettingsHandler(cfg))
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Iniciar el servidor
 	if err := router.Run(":8080"); err != nil {
