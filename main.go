@@ -1,7 +1,15 @@
 // @title Go Redmine-ish API
 // @version 1.0
 // @description API para gestionar proyectos, usuarios, roles, categorías y problemas al estilo de Redmine.
-
+// @securityDefinitions.apikey  BearerAuth
+// @in                          header
+// @name                        Authorization
+// @description                 Token de autenticación
+// @host                        issues.mydomain.com
+// @BasePath                    /api
+// @schemes                    https
+// @contact.name                API Support
+// @contact.url                 http://www.mydomain.com/support
 package main
 
 import (
@@ -23,8 +31,8 @@ func main() {
 	docs.SwaggerInfo.Title = "Go Redmine-ish API"
 	docs.SwaggerInfo.Description = "API para gestionar proyectos, usuarios, roles, categorías y problemas al estilo de Redmine."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "https://issues.mydomain.com/"
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.Host = "issues.mydomain.com"
+	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Schemes = []string{"https"}
 
 	// Cargar la configuración
