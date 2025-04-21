@@ -58,6 +58,7 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
+		AuthToken:    auth_token,
 		ClientSecret: client_secret,
 		DBHost:       db_host,
 		DBPort:       "5432", // Puerto por defecto de PostgreSQL
