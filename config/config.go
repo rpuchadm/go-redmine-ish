@@ -6,12 +6,13 @@ import (
 )
 
 type Config struct {
-	AuthToken  string
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
+	AuthToken    string
+	ClientSecret string
+	DBHost       string
+	DBPort       string
+	DBUser       string
+	DBPassword   string
+	DBName       string
 }
 
 func LoadConfig() *Config {
@@ -20,6 +21,12 @@ func LoadConfig() *Config {
 	auth_token := os.Getenv("AUTH_TOKEN")
 	if auth_token == "" {
 		fmt.Println("ERROR AUTH_TOKEN no está definido")
+		os.Exit(1)
+	}
+
+	client_secret := os.Getenv("CLIENT_SECRET")
+	if client_secret == "" {
+		fmt.Println("ERROR CLIENT_SECRET no está definido")
 		os.Exit(1)
 	}
 
@@ -51,11 +58,11 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		AuthToken:  auth_token,
-		DBHost:     db_host,
-		DBPort:     "5432", // Puerto por defecto de PostgreSQL
-		DBUser:     db_user,
-		DBPassword: db_password,
-		DBName:     db_name,
+		ClientSecret: client_secret,
+		DBHost:       db_host,
+		DBPort:       "5432", // Puerto por defecto de PostgreSQL
+		DBUser:       db_user,
+		DBPassword:   db_password,
+		DBName:       db_name,
 	}
 }
