@@ -1,3 +1,4 @@
+# microk8s kubectl create namespace go-redmine-ish
 apiVersion: v1
 kind: Namespace
 metadata:

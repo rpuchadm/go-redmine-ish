@@ -1,9 +1,25 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: auth-config
+  namespace: go-redmine-ish
+data:
+  #AUTH_ACCESSTOKEN_URL: https://erp.mydomain.com/oauth/accessToken
+  AUTH_ACCESSTOKEN_URL: http://dummy-corp-auth-rust-app.dummy-corp-erp-namespace:8080/accessToken
+  AUTH_PROFILE_URL: http://dummy-corp-auth-rust-app.dummy-corp-erp-namespace:8080/profile
+  CLIENT_ID: CRM
+  REDIRECT_URI: https://issues.mydomain.com/authback/?code=
+  AUTH_REDIS_TTL: "120"
+  CORP_SERVICE_USERDATA_URL: http://dummy-corp-erp-golang-app-service.dummy-corp-erp-namespace:8080
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: go-redmine-ish-golang-app
   namespace: go-redmine-ish
 spec:
+  revisionHistoryLimit: 2
   replicas: 1
   selector:
     matchLabels:
@@ -24,11 +40,11 @@ spec:
         - configMapRef:
             name: redis-config  # Referencia al ConfigMap  
         env:
-        - name: AUTH_TOKEN
+        - name: CLIENT_SECRET
           valueFrom:
             secretKeyRef:
               name: auth-secret  # Nombre del secret
-              key: AUTH_TOKEN    # Clave del secret
+              key: CLIENT_SECRET    # Clave del secret
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
