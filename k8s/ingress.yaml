@@ -20,3 +20,10 @@ spec:
                 name: go-redmine-ish-golang-service
                 port:
                   number: 8080
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: vite-redmine-ish-app-service
+                port:
+                  number: 80
