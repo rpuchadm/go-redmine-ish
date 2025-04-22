@@ -1059,6 +1059,12 @@ const docTemplate = `{
         "handlers.GetIssueHandlerData": {
             "type": "object",
             "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Category"
+                    }
+                },
                 "comments": {
                     "type": "array",
                     "items": {
@@ -1474,8 +1480,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "API para gestionar proyectos, usuarios, roles, categorías y problemas al estilo de Redmine.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	//LeftDelim:        "{{",
-	//RightDelim:       "}}",
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

@@ -48,11 +48,12 @@ func GetIssuesHandler(cfg *config.Config) gin.HandlerFunc {
 }
 
 type GetIssueHandlerData struct {
-	Issue    models.Issue     `json:"issue"`
-	Tracker  models.Tracker   `json:"tracker"`
-	Project  models.Project   `json:"project,omitempty"`
-	Users    []models.User    `json:"users,omitempty"`
-	Comments []models.Comment `json:"comments,omitempty"`
+	Issue      models.Issue      `json:"issue"`
+	Tracker    models.Tracker    `json:"tracker"`
+	Project    models.Project    `json:"project,omitempty"`
+	Users      []models.User     `json:"users,omitempty"`
+	Categories []models.Category `json:"categories,omitempty"`
+	Comments   []models.Comment  `json:"comments,omitempty"`
 }
 
 // @Summary: GetIssueHandler
@@ -114,6 +115,15 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 				return
 			}
 			data.Project = *project
+
+			categories, err := models.GetCategoriesByProjectID(db, *issue.ProjectID)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			if len(categories) > 0 {
+				data.Categories = categories
+			}
 		}
 
 		users, err := models.GetUsersByIssueID(db, id)

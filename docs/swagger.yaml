@@ -20,6 +20,10 @@ definitions:
     type: object
   handlers.GetIssueHandlerData:
     properties:
+      categories:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
       comments:
         items:
           $ref: '#/definitions/models.Comment'

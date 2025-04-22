@@ -1051,6 +1051,12 @@
         "handlers.GetIssueHandlerData": {
             "type": "object",
             "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Category"
+                    }
+                },
                 "comments": {
                     "type": "array",
                     "items": {
