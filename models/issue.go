@@ -11,7 +11,7 @@ type Issue struct {
 	Subject      string `json:"subject"`
 	Description  string `json:"description"`
 	TrackerID    int    `json:"tracker_id"`
-	ProjectID    *int   `json:"project_id"`
+	ProjectID    int    `json:"project_id"`
 	AssignedToID *int   `json:"assigned_to_id"`
 	Status       string `json:"status"`
 	CategoryID   *int   `json:"category_id"`
@@ -275,7 +275,7 @@ func CreateIssuesTable(db *sql.DB) error {
 		subject VARCHAR(255) NOT NULL,
 		description TEXT,
 		tracker_id INT NOT NULL,
-		project_id INT,
+		project_id INT NOT NULL,
 		assigned_to_id INT,
 		status VARCHAR(50) DEFAULT 'Open',
 		category_id INT,

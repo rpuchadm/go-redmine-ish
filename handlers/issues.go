@@ -48,9 +48,9 @@ func GetIssuesHandler(cfg *config.Config) gin.HandlerFunc {
 }
 
 type GetIssueHandlerData struct {
-	Issue      models.Issue      `json:"issue"`
+	Issue      *models.Issue     `json:"issue,omitempty"`
 	Trackers   []models.Tracker  `json:"trackers"`
-	Project    models.Project    `json:"project,omitempty"`
+	Project    *models.Project   `json:"project,omitempty"`
 	Users      []models.User     `json:"users,omitempty"`
 	Categories []models.Category `json:"categories,omitempty"`
 	Comments   []models.Comment  `json:"comments,omitempty"`
@@ -71,6 +71,17 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pid := c.Param("id")
 
+		project_id := 0
+		qproject_id := c.Query("project_id")
+		if qproject_id != "" {
+			var err error
+			project_id, err = strconv.Atoi(qproject_id)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
@@ -86,17 +97,6 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 		defer db.Close()
 
-		issue, err := models.GetIssueByID(db, id)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		if issue == nil {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
-			return
-		}
-
 		trackers, err := models.GetAllTrackers(db)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -104,19 +104,38 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		data := GetIssueHandlerData{
-			Issue:    *issue,
 			Trackers: trackers,
 		}
 
-		if issue.ProjectID != nil {
-			project, err := models.GetProjectByID(db, *issue.ProjectID)
+		if id > 0 {
+
+			issue, err := models.GetIssueByID(db, id)
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
-			data.Project = *project
 
-			categories, err := models.GetCategoriesByProjectID(db, *issue.ProjectID)
+			if issue == nil {
+				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
+				return
+			}
+
+			data.Issue = issue
+
+			if issue.ProjectID != nil {
+				project_id = *issue.ProjectID
+			}
+		}
+
+		if project_id != 0 {
+			project, err := models.GetProjectByID(db, project_id)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			data.Project = project
+
+			categories, err := models.GetCategoriesByProjectID(db, project_id)
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
@@ -126,24 +145,26 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 			}
 		}
 
-		users, err := models.GetUsersByIssueID(db, id)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		if id > 0 {
+			users, err := models.GetUsersByIssueID(db, id)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 
-		if len(users) > 0 {
-			data.Users = users
-		}
+			if len(users) > 0 {
+				data.Users = users
+			}
 
-		comments, err := models.GetCommentsByIssueID(db, id)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+			comments, err := models.GetCommentsByIssueID(db, id)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 
-		if len(comments) > 0 {
-			data.Comments = comments
+			if len(comments) > 0 {
+				data.Comments = comments
+			}
 		}
 
 		c.JSON(http.StatusOK, data)
