@@ -38,11 +38,42 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 
 		// Validar el token
 		if token != cfg.AuthToken {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			return
+			if !oauth_token_autorizado(token) {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+				return
+			}
 		}
 
 		// Si el token es válido, continuar con el siguiente handler
 		c.Next()
 	}
+}
+
+func oauth_token_autorizado(token string) bool {
+
+	auth_profile, err := AuthProfile(token)
+	if err != nil {
+		fmt.Println("oauth_token_autorizado error:", err)
+		return false
+	}
+	if auth_profile == nil {
+		fmt.Println("oauth_token_autorizado auth_profile es nil")
+		return false
+	}
+	if auth_profile.ClientID == "" {
+		fmt.Println("oauth_token_autorizado auth_profile.ClientID es nil")
+		return false
+	}
+	if auth_profile.UserID != 0 {
+		// autorizaciones de usuario
+		if auth_profile.ClientID == "ISSUES" {
+			fmt.Println("oauth_token_autorizado auth_profile.ClientID es ISSUES")
+			return true
+		} else if auth_profile.ClientID == "CRM" {
+			fmt.Println("oauth_token_autorizado auth_profile.ClientID es CRM")
+			return true
+		}
+	}
+
+	return false
 }

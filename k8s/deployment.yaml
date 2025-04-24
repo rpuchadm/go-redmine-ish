@@ -36,9 +36,11 @@ spec:
         - containerPort: 8080
         envFrom:
         - configMapRef:
-            name: postgres-config
+            name: auth-config  # Referencia al ConfigMap
         - configMapRef:
-            name: redis-config  # Referencia al ConfigMap  
+            name: postgres-config  # Referencia al ConfigMap
+        - configMapRef:
+            name: redis-config  # Referencia al ConfigMap
         env:
         - name: AUTH_TOKEN
           valueFrom:
