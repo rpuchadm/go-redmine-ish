@@ -38,6 +38,8 @@ go install github.com/swaggo/swag/cmd/swag@latest
 
 swag init
 
+https://issues.mydomain.com/api/swagger/index.html
+
 CUIDADO cuando se pasa swag init
 en docs/docs.go
 docs/docs.go:977:2: unknown field LeftDelim in struct literal of type "github.com/swaggo/swag".Spec
