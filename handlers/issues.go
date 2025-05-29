@@ -122,8 +122,8 @@ func GetIssueHandler(cfg *config.Config) gin.HandlerFunc {
 
 			data.Issue = issue
 
-			if issue.ProjectID != nil {
-				project_id = *issue.ProjectID
+			if issue.ProjectID != 0 {
+				project_id = issue.ProjectID
 			}
 		}
 

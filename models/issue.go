@@ -304,7 +304,7 @@ func TestIssuesTable(db *sql.DB) error {
 		Subject:      "Test Issue",
 		Description:  "This is a test issue",
 		TrackerID:    2,
-		ProjectID:    &project_id,
+		ProjectID:    project_id,
 		AssignedToID: &assigned_to_id,
 		Status:       "Open",
 	}
@@ -359,9 +359,9 @@ func SampleIssues(db *sql.DB) error {
 	project_id := 2
 	categoty_id := 4
 	issues := []*Issue{
-		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: &project_id, AssignedToID: &assigned_to_id, Status: "Open", CategoryID: &categoty_id},
-		{Subject: "Issue 2", Description: "This is issue 2", TrackerID: 2, ProjectID: &project_id, AssignedToID: &assigned_to_id, Status: "Open", CategoryID: &categoty_id},
-		{Subject: "Issue 3", Description: "This is issue 3", TrackerID: 3, ProjectID: &project_id, AssignedToID: &assigned_to_id, Status: "Open", CategoryID: &categoty_id},
+		{Subject: "Issue 1", Description: "This is issue 1", TrackerID: 1, ProjectID: project_id, AssignedToID: &assigned_to_id, Status: "Open", CategoryID: &categoty_id},
+		{Subject: "Issue 2", Description: "This is issue 2", TrackerID: 2, ProjectID: project_id, AssignedToID: &assigned_to_id, Status: "Open", CategoryID: &categoty_id},
+		{Subject: "Issue 3", Description: "This is issue 3", TrackerID: 3, ProjectID: project_id, AssignedToID: &assigned_to_id, Status: "Open", CategoryID: &categoty_id},
 	}
 
 	for _, issue := range issues {
