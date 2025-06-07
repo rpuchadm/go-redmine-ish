@@ -76,6 +76,7 @@ type GetProjectHandlerData struct {
 	Members                []models.Member                 `json:"members,omitempty"`
 	CategoryNumberOfIssues []models.CategoryNumberOfIssues `json:"categorynumberofissues,omitempty"`
 	IssuesNoCategory       []models.Issue                  `json:"issues_no_category,omitempty"`
+	Trackers               []models.Tracker                `json:"trackers"`
 }
 
 // @Summary: GetProjectHandler
@@ -123,9 +124,16 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
+		trackers, err := models.GetAllTrackers(db)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 		data := GetProjectHandlerData{
-			Project: *project,
-			Roles:   roles,
+			Project:  *project,
+			Roles:    roles,
+			Trackers: trackers,
 		}
 
 		categories, err := models.GetCategoriesByProjectID(db, id)
