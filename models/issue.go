@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 // Issue representa un ticket o incidencia
@@ -105,15 +106,16 @@ func GetIssuesByProjectID(db *sql.DB, projectID int) ([]Issue, error) {
 }
 
 func GetIssuesByCategoryID(db *sql.DB, categoryID int) ([]Issue, error) {
-	query := `
+	query := fmt.Sprintf(`
 		SELECT 
 			id, subject, description, tracker_id, project_id,
 			assigned_to_id, status, category_id,
 			created_at, updated_at
-		FROM issues where category_id = $1`
+		FROM issues where category_id = %d`, categoryID)
 
-	rows, err := db.Query(query, categoryID)
+	rows, err := db.Query(query)
 	if err != nil {
+		log.Printf("Error GetIssuesByCategoryID querying issues by category ID %v %v\n", query, err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -139,6 +141,94 @@ func GetIssuesByCategoryID(db *sql.DB, categoryID int) ([]Issue, error) {
 
 		issues = append(issues, issue)
 	}
+
+	return issues, nil
+}
+
+func GetIssuesByProjectWhereCategoryIsNull(db *sql.DB, projectID int) ([]Issue, error) {
+	query := fmt.Sprintf(`
+		SELECT 
+			id, subject, description, tracker_id, project_id,
+			assigned_to_id, status,
+			created_at, updated_at
+		FROM issues
+		where project_id = %d
+		AND category_id IS NULL`, projectID)
+
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Printf("Error GetIssuesByProjectWhereCategoryIsNull executing query %v %v\n", query, err)
+		return nil, err
+	} else {
+		log.Printf("GetIssuesByProjectWhereCategoryIsNull executed query %v\n", query)
+	}
+	defer rows.Close()
+
+	var issues []Issue
+	for rows.Next() {
+		var issue Issue
+		err := rows.Scan(
+			&issue.ID,
+			&issue.Subject,
+			&issue.Description,
+			&issue.TrackerID,
+			&issue.ProjectID,
+			&issue.AssignedToID,
+			&issue.Status,
+			&issue.CreatedAt,
+			&issue.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		issues = append(issues, issue)
+	}
+
+	log.Printf("GetIssuesByProjectWhereCategoryIsNull found %d issues for project ID %d\n", len(issues), projectID)
+
+	return issues, nil
+}
+
+func GetIssuesWhereProjectIsNull(db *sql.DB) ([]Issue, error) {
+	query := `
+		SELECT 
+			id, subject, description, tracker_id,
+			assigned_to_id, status,
+			created_at, updated_at
+		FROM issues
+		where project_id IS NULL`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Printf("Error GetIssuesWhereProjectIsNull executing query %v %v\n", query, err)
+		return nil, err
+	} else {
+		log.Printf("GetIssuesWhereProjectIsNull executed query %v\n", query)
+	}
+	defer rows.Close()
+
+	var issues []Issue
+	for rows.Next() {
+		var issue Issue
+		err := rows.Scan(
+			&issue.ID,
+			&issue.Subject,
+			&issue.Description,
+			&issue.TrackerID,
+			&issue.AssignedToID,
+			&issue.Status,
+			&issue.CreatedAt,
+			&issue.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		issues = append(issues, issue)
+	}
+
+	log.Printf("GetIssuesWhereProjectIsNull found %d issues where project is null\n", len(issues))
 
 	return issues, nil
 }

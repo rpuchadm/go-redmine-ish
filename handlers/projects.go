@@ -12,8 +12,9 @@ import (
 )
 
 type GetProjectsHandlerData struct {
-	Projects []models.Project `json:"projects"`
-	Count    int              `json:"count"`
+	Projects        []models.Project `json:"projects"`
+	Count           int              `json:"count"`
+	IssuesNoProject []models.Issue   `json:"issues,omitempty"`
 }
 
 // @Summary: GetProjectsHandler
@@ -30,6 +31,7 @@ func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
+			log.Println("Error GetProjectsHandler initializing database:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -37,19 +39,29 @@ func GetProjectsHandler(cfg *config.Config) gin.HandlerFunc {
 
 		projects, err := models.GetAllProjects(db)
 		if err != nil {
+			log.Println("Error GetProjectsHandler getting all projects:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		count, err := models.CountProjects(db)
 		if err != nil {
+			log.Println("Error GetProjectsHandler counting projects:", err)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		issues, err := models.GetIssuesWhereProjectIsNull(db)
+		if err != nil {
+			log.Println("Error GetProjectsHandler getting issues where project is null:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		data := GetProjectsHandlerData{
-			Projects: projects,
-			Count:    count,
+			Projects:        projects,
+			Count:           count,
+			IssuesNoProject: issues,
 		}
 
 		c.JSON(http.StatusOK, data)
@@ -63,6 +75,7 @@ type GetProjectHandlerData struct {
 	Users                  []models.User                   `json:"users,omitempty"`
 	Members                []models.Member                 `json:"members,omitempty"`
 	CategoryNumberOfIssues []models.CategoryNumberOfIssues `json:"categorynumberofissues,omitempty"`
+	IssuesNoCategory       []models.Issue                  `json:"issues_no_category,omitempty"`
 }
 
 // @Summary: GetProjectHandler
@@ -157,6 +170,16 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		if len(categorynumberofissues) > 0 {
 			data.CategoryNumberOfIssues = categorynumberofissues
+		}
+
+		issues, err := models.GetIssuesByProjectWhereCategoryIsNull(db, id)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if len(issues) > 0 {
+			data.IssuesNoCategory = issues
 		}
 
 		c.JSON(http.StatusOK, data)
