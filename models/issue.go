@@ -380,14 +380,16 @@ type CategoryNumberOfIssues struct {
 }
 
 func CountIssuesByCategoryWhereProject(db *sql.DB, projectID int) ([]CategoryNumberOfIssues, error) {
-	query := `
+	query := fmt.Sprintf(`
 	SELECT 
 		category_id, COUNT(*) as number_of_issues
 	FROM issues
-	WHERE project_id = $1
-	GROUP BY category_id`
+		WHERE project_id = %d
+		and category_id IS NOT NULL
+	group by category_id
+	`, projectID)
 
-	rows, err := db.Query(query, projectID)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}

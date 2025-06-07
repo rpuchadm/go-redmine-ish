@@ -4,6 +4,7 @@ import (
 	"go-redmine-ish/config"
 	"go-redmine-ish/database"
 	"go-redmine-ish/models"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -81,6 +82,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		// Inicializar la base de datos
 		db, err := database.InitDB(cfg)
 		if err != nil {
+			log.Println("Error initializing database:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -89,18 +91,21 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 		// pasar string id a int id
 		id, err := strconv.Atoi(pid)
 		if err != nil {
+			log.Println("Error converting project ID:", err)
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		project, err := models.GetProjectByID(db, id)
 		if err != nil {
+			log.Println("Error getting project by ID:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		roles, err := models.GetAllRoles(db)
 		if err != nil {
+			log.Println("Error getting roles:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -112,6 +117,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		categories, err := models.GetCategoriesByProjectID(db, id)
 		if err != nil {
+			log.Println("Error getting categories by project ID:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -122,6 +128,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		users, err := models.GetUsersByProjectID(db, id)
 		if err != nil {
+			log.Println("Error getting users by project ID:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -132,6 +139,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		members, err := models.GetMembersByProjectID(db, id)
 		if err != nil {
+			log.Println("Error getting members by project ID:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -142,6 +150,7 @@ func GetProjectHandler(cfg *config.Config) gin.HandlerFunc {
 
 		categorynumberofissues, err := models.CountIssuesByCategoryWhereProject(db, id)
 		if err != nil {
+			log.Println("Error counting issues by category where project:", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
